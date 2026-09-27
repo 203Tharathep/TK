@@ -1,0 +1,19 @@
+{
+  "name": "romantic-sunflower-surprise",
+  "version": "1.0.0",
+  "description": "Romantic interactive sunflower surprise website for girlfriend",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "echo 'Ready for Vercel static deployment'"
+  },
+  "keywords": [
+    "sunflower",
+    "surprise",
+    "love-letter",
+    "romantic",
+    "vercel"
+  ],
+  "author": "",
+  "license": "MIT"
+}

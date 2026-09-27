@@ -1,0 +1,3592 @@
+/* ==========================================================================
+   🌻 TO MY SUNSHINE - ROMANTIC SUNFLOWER SURPRISE STYLING
+   ========================================================================== */
+
+:root {
+  --bg-gradient: linear-gradient(180deg, #ffe8cc 0%, #fbd5a9 30%, #f7c59f 60%, #e29578 100%);
+  --sky-gradient: linear-gradient(180deg, #ffc579 0%, #f8b195 40%, #c06c84 100%);
+
+  --primary-gold: #f59e0b;
+  --primary-amber: #d97706;
+  --primary-light: #fef3c7;
+  --gold-glow: rgba(245, 158, 11, 0.6);
+  --heart-pink: #ff477e;
+  --rose-gold: #f43f5e;
+
+  --text-dark: #292524;
+  --text-muted: #57534e;
+  --text-light: #fafaf9;
+
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.85);
+  --glass-shadow: 0 12px 36px rgba(180, 83, 9, 0.18), 0 4px 12px rgba(0, 0, 0, 0.04);
+
+  --font-main: 'Prompt', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Mitr', sans-serif;
+  --font-handwriting: 'Itim', 'Caveat', cursive;
+  --font-serif: 'Playfair Display', serif;
+}
+
+/* --------------------------------------------------------------------------
+   RESET & GLOBAL
+   -------------------------------------------------------------------------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+*::-webkit-scrollbar,
+::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  min-height: -webkit-fill-available;
+  overflow: hidden;
+  font-family: var(--font-main);
+  color: var(--text-dark);
+  background: #fbf5eb;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+/* Ambient Canvas Overlay (Particles, fireflies, golden dust) */
+#ambient-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* --------------------------------------------------------------------------
+   FLOATING AUDIO WIDGET
+   -------------------------------------------------------------------------- */
+.audio-widget,
+.hud-btn-audio,
+#btn-garden-audio,
+#audio-widget {
+  display: none !important;
+}
+
+.audio-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(20, 16, 28, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(251, 191, 36, 0.15);
+  cursor: pointer;
+  font-family: var(--font-main);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #fef08a;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.audio-btn:hover {
+  background: rgba(35, 28, 48, 0.85);
+  border-color: rgba(251, 191, 36, 0.65);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.6), 0 0 22px rgba(251, 191, 36, 0.3);
+  color: #ffffff;
+}
+
+.audio-icon {
+  font-size: 1.1rem;
+}
+
+.sound-wave {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 14px;
+}
+
+.sound-wave .bar {
+  width: 3px;
+  background: #d97706;
+  border-radius: 2px;
+  height: 4px;
+  transition: height 0.2s ease;
+}
+
+.audio-btn.playing .bar-1 {
+  animation: soundWaveAnim 0.7s infinite ease-in-out alternate;
+}
+
+.audio-btn.playing .bar-2 {
+  animation: soundWaveAnim 0.9s infinite ease-in-out alternate 0.2s;
+}
+
+.audio-btn.playing .bar-3 {
+  animation: soundWaveAnim 0.6s infinite ease-in-out alternate 0.4s;
+}
+
+.audio-btn.playing .bar-4 {
+  animation: soundWaveAnim 0.8s infinite ease-in-out alternate 0.1s;
+}
+
+@keyframes soundWaveAnim {
+  0% {
+    height: 3px;
+  }
+
+  100% {
+    height: 14px;
+    background: #ea580c;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   VIEW CONTAINER & PAGE ROUTING
+   -------------------------------------------------------------------------- */
+#app-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.view-section {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.view-section.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: scale(1);
+}
+
+.view-section.fade-out {
+  opacity: 0;
+  transform: scale(1.08);
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   PAGE 1: HERO LANDING (SINGLE SWAYING SUNFLOWER IN THE DARK)
+   -------------------------------------------------------------------------- */
+#hero-view {
+  background: radial-gradient(ellipse 65% 55% at 50% 50%,
+      #4a2608 0%,
+      #301804 18%,
+      #1d0d08 35%,
+      #130a16 54%,
+      #0a050d 75%,
+      #040206 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* === Cute Grass Ground Strip === */
+.hero-grass-ground {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: clamp(90px, 13vh, 130px);
+  pointer-events: none;
+  z-index: 5;
+  overflow: hidden;
+}
+
+.grass-svg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  animation: grassSway 6s ease-in-out infinite alternate;
+  transform-origin: bottom center;
+}
+
+@keyframes grassSway {
+  0% {
+    transform: skewX(-0.5deg) scaleX(1);
+  }
+
+  50% {
+    transform: skewX(0.4deg) scaleX(1.002);
+  }
+
+  100% {
+    transform: skewX(-0.3deg) scaleX(1);
+  }
+}
+
+/* Ground pool of light beneath glowing sunflower */
+.hero-grass-ground::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 600px;
+  height: 75px;
+  background: radial-gradient(ellipse at 50% 100%,
+      rgba(245, 158, 11, 0.22) 0%,
+      rgba(180, 83, 9, 0.08) 40%,
+      transparent 75%);
+  pointer-events: none;
+}
+
+.sunbeam-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 50%,
+      rgba(253, 224, 71, 0.15) 0%,
+      rgba(245, 158, 11, 0.08) 22%,
+      rgba(217, 119, 6, 0.03) 42%,
+      transparent 65%);
+  pointer-events: none;
+  animation: sunflowerLightBreathe 6s infinite ease-in-out alternate;
+}
+
+@keyframes sunflowerLightBreathe {
+  0% {
+    opacity: 0.8;
+    transform: scale(0.97);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+}
+
+/* Ambient Floating Sparkle Stars in Hero View */
+.hero-sparkle-stars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+  overflow: hidden;
+}
+
+.hero-star {
+  position: absolute;
+  color: #fff9e6;
+  text-shadow: 0 0 6px rgba(254, 240, 138, 0.85), 0 0 14px rgba(245, 158, 11, 0.45);
+  animation: heroStarFloat 6s ease-in-out infinite alternate;
+  user-select: none;
+  pointer-events: none;
+}
+
+.star-1 {
+  top: 15%;
+  left: 14%;
+  font-size: 13px;
+  animation-duration: 5.4s;
+  animation-delay: 0s;
+}
+
+.star-2 {
+  top: 22%;
+  left: 82%;
+  font-size: 11px;
+  animation-duration: 6.6s;
+  animation-delay: 1.1s;
+}
+
+.star-3 {
+  top: 42%;
+  left: 20%;
+  font-size: 14px;
+  animation-duration: 4.9s;
+  animation-delay: 0.4s;
+}
+
+.star-4 {
+  top: 36%;
+  left: 76%;
+  font-size: 10px;
+  animation-duration: 7.1s;
+  animation-delay: 2.0s;
+}
+
+.star-5 {
+  top: 58%;
+  left: 16%;
+  font-size: 12px;
+  animation-duration: 5.7s;
+  animation-delay: 1.7s;
+}
+
+.star-6 {
+  top: 54%;
+  left: 84%;
+  font-size: 13px;
+  animation-duration: 6.3s;
+  animation-delay: 0.7s;
+}
+
+.star-7 {
+  top: 72%;
+  left: 26%;
+  font-size: 9px;
+  animation-duration: 5.8s;
+  animation-delay: 2.3s;
+}
+
+.star-8 {
+  top: 68%;
+  left: 72%;
+  font-size: 11px;
+  animation-duration: 6.2s;
+  animation-delay: 1.4s;
+}
+
+.star-9 {
+  top: 26%;
+  left: 32%;
+  font-size: 10px;
+  animation-duration: 6.5s;
+  animation-delay: 3.1s;
+}
+
+.star-10 {
+  top: 20%;
+  left: 66%;
+  font-size: 12px;
+  animation-duration: 5.1s;
+  animation-delay: 2.8s;
+}
+
+@keyframes heroStarFloat {
+  0% {
+    transform: translateY(0) translateX(0) scale(0.85);
+    opacity: 0.35;
+  }
+
+  50% {
+    transform: translateY(-14px) translateX(6px) scale(1.15);
+    opacity: 0.85;
+  }
+
+  100% {
+    transform: translateY(-6px) translateX(-5px) scale(0.9);
+    opacity: 0.45;
+  }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  max-width: 600px;
+  height: 100%;
+  max-height: 100dvh;
+  padding: max(18px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom));
+  text-align: center;
+}
+
+/* Hero Surprise Modal (Centered popup with heavy background blur) */
+.hero-modal-overlay {
+  z-index: 300;
+}
+
+.hero-modal-backdrop {
+  background: radial-gradient(circle at center, rgba(30, 20, 15, 0.6) 0%, rgba(15, 10, 8, 0.78) 100%);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   HERO POPUP: INSTAGRAM DM CHAT INTERFACE & ANNIVERSARY CARD TRANSITION
+   ========================================================================== */
+
+/* 1. INSTAGRAM DM CHAT CONTAINER CARD */
+.hero-chat-card {
+  position: relative;
+  z-index: 10;
+  width: min(94vw, 390px);
+  max-width: 390px;
+  height: min(85vh, 620px);
+  background: #0d0d10;
+  border-radius: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 25px 65px rgba(0, 0, 0, 0.75),
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 0 45px rgba(115, 34, 219, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  user-select: none;
+  font-family: 'Prompt', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  transform: scale(0.9) translateY(18px);
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.34, 1.4, 0.64, 1),
+    opacity 0.35s ease;
+}
+
+.hero-modal-overlay.active .hero-chat-card {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+.hero-chat-card.fade-out {
+  transform: scale(0.9) translateY(-14px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.38s ease, opacity 0.32s ease;
+}
+
+.hero-chat-card.card-enter {
+  animation: cardPopIn 0.38s cubic-bezier(0.34, 1.35, 0.64, 1) forwards;
+}
+
+@keyframes cardPopIn {
+  from {
+    transform: scale(0.92) translateY(14px);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* IG Top Navigation Bar */
+.ig-chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px 11px;
+  background: rgba(18, 18, 22, 0.96);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 5;
+  flex-shrink: 0;
+}
+
+.ig-chat-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ig-chat-back-arrow {
+  font-size: 24px;
+  color: #f3f4f6;
+  line-height: 1;
+  font-weight: 300;
+  margin-top: -2px;
+}
+
+.ig-chat-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #000000;
+  background-image: url('assets/tokyo_profile.png');
+  background-size: cover;
+  background-position: center;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  position: relative;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+.ig-chat-user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.ig-chat-username {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.ig-chat-user-status {
+  font-size: 10.5px;
+  color: #8e8e93;
+  line-height: 1.2;
+}
+
+
+
+/* IG Messages Scroll Body */
+.ig-chat-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #000000;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ig-chat-body::-webkit-scrollbar {
+  width: 3px;
+}
+
+.ig-chat-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+}
+
+/* Timestamp at top */
+.ig-chat-timestamp {
+  text-align: center;
+  font-size: 12px;
+  color: #8e8e93;
+  margin: 6px 0 12px;
+  letter-spacing: 0.2px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.ig-chat-timestamp.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Individual Message Rows */
+.ig-chat-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-bottom: 2px;
+  opacity: 0;
+  transform: translateY(12px) scale(0.96);
+  transition: opacity 0.35s cubic-bezier(0.2, 0.9, 0.3, 1),
+    transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.ig-chat-row.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.ig-chat-row.incoming {
+  justify-content: flex-start;
+}
+
+.ig-chat-row.outgoing {
+  justify-content: flex-end;
+}
+
+/* Gap between speaker turns */
+.ig-chat-row.incoming+.ig-chat-row.outgoing,
+.ig-chat-row.outgoing+.ig-chat-row.incoming {
+  margin-top: 10px;
+}
+
+/* Sender circular avatar */
+.ig-chat-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: #000000;
+  background-image: url('assets/tokyo_profile.png');
+  background-size: cover;
+  background-position: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 2px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.4);
+}
+
+.ig-chat-avatar-spacer {
+  width: 26px;
+  flex-shrink: 0;
+}
+
+.ig-chat-col {
+  display: flex;
+  flex-direction: column;
+  max-width: 80%;
+}
+
+.ig-chat-row.outgoing .ig-chat-col {
+  align-items: flex-end;
+}
+
+/* Bubble Styling */
+.ig-chat-bubble {
+  padding: 8px 14px;
+  font-size: 14px;
+  line-height: 1.38;
+  word-break: break-word;
+  position: relative;
+  letter-spacing: 0.15px;
+}
+
+.ig-chat-bubble.incoming {
+  background: #262626;
+  color: #f5f5f5;
+  border-radius: 18px;
+}
+
+.ig-chat-bubble.outgoing {
+  background: #7322db;
+  background: linear-gradient(135deg, #7425e4 0%, #8b32f5 100%);
+  color: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 2px 10px rgba(116, 37, 228, 0.35);
+}
+
+/* Reply Quote Styling (matching Image 2) */
+.ig-reply-info {
+  font-size: 11px;
+  color: #8e8e93;
+  margin-bottom: 3px;
+  margin-left: 2px;
+}
+
+.ig-reply-quote {
+  background: #391e5e;
+  border-radius: 12px;
+  padding: 5px 12px 5px 8px;
+  margin-bottom: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+}
+
+.ig-reply-line {
+  width: 2.5px;
+  height: 16px;
+  background: #ffffff;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.ig-reply-content {
+  font-size: 12.5px;
+  color: #e5e5ea;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* IG Fake Input Footer */
+.ig-chat-footer {
+  padding: 10px 14px;
+  background: #0d0d10;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.ig-chat-input-fake {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #1c1c1e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 22px;
+  padding: 7px 14px;
+  font-size: 13px;
+  color: #8e8e93;
+  transition: opacity 0.3s ease;
+}
+
+.ig-chat-input-icons {
+  font-size: 13px;
+  letter-spacing: 4px;
+}
+
+.hero-chat-card.chat-finished {
+  cursor: pointer;
+}
+
+
+
+
+/* 2. ANNIVERSARY SURPRISE CARD (Image 1) */
+.hero-surprise-card {
+  position: relative;
+  z-index: 10;
+  width: min(92vw, 500px);
+  max-width: 500px;
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 248, 235, 0.98) 100%);
+  border-radius: 36px;
+  padding: 34px 22px 34px;
+  text-align: center;
+  box-shadow: 0 25px 65px rgba(0, 0, 0, 0.45),
+    0 0 0 1.5px rgba(255, 218, 138, 0.65),
+    0 0 50px rgba(245, 158, 11, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  display: none;
+  /* Initially hidden until IG chat finishes */
+  opacity: 0;
+  transform: scale(0.85) translateY(18px);
+  flex-direction: column;
+  align-items: center;
+  user-select: none;
+  cursor: pointer;
+  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.35s ease;
+}
+
+.hero-surprise-card.visible {
+  display: flex;
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  animation: heroCardZoomIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes heroCardZoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.85) translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.hero-modal-sparkles {
+  font-size: 1.25rem;
+  letter-spacing: 6px;
+  margin-bottom: 12px;
+  animation: floatSparkles 2.5s infinite ease-in-out;
+}
+
+@keyframes floatSparkles {
+
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.9;
+  }
+
+  50% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+.hero-surprise-card .hero-badge {
+  margin-bottom: 12px;
+}
+
+.hero-surprise-card .hero-title {
+  margin-top: 0;
+  font-size: clamp(2rem, 6.5vw, 2.7rem);
+  line-height: 1.15;
+}
+
+.hero-surprise-card .hero-subtitle {
+  margin-top: 10px;
+  font-size: clamp(1.1rem, 3.8vw, 1.4rem);
+  max-width: 400px;
+  line-height: 1.4;
+}
+
+.hero-tap-hint {
+  margin-top: 18px;
+  font-size: 0.85rem;
+  color: #b45309;
+  opacity: 0.75;
+  letter-spacing: 0.5px;
+  animation: pulseHint 2s infinite ease-in-out;
+}
+
+@keyframes pulseHint {
+
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: translateY(0);
+  }
+
+  50% {
+    opacity: 0.9;
+    transform: translateY(-2px);
+  }
+}
+
+/* Hero Badge */
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 22px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(255, 255, 255, 0.95);
+  color: #b45309;
+  font-size: clamp(1.05rem, 3.4vw, 1.4rem);
+  font-weight: 700;
+  box-shadow: 0 6px 20px rgba(217, 119, 6, 0.18);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  line-height: 1.25;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.85rem, 6.5vw, 3.2rem);
+  font-weight: 600;
+  color: #451a03;
+  margin-top: clamp(20px, 4vh, 36px);
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+}
+
+.hero-title .highlight-text {
+  background: linear-gradient(135deg, #d97706 0%, #ea580c 50%, #e11d48 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  position: relative;
+}
+
+.hero-subtitle {
+  font-family: var(--font-handwriting);
+  font-size: clamp(1.05rem, 3.8vw, 1.55rem);
+  color: #78350f;
+  margin-top: clamp(8px, 1.5vh, 14px);
+  max-width: 440px;
+  line-height: 1.35;
+}
+
+/* Flower Stage */
+.hero-flower-stage {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: clamp(10px, 2.5vh, 25px);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+/* Floating Whisper Text Above Sunflower ("ทานตะวันดอกนั้น ส่องสว่างแฮะ") - Pure text floating */
+.hero-flower-whisper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: clamp(16px, 3vh, 32px);
+  padding: 0;
+  background: none;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  cursor: pointer;
+  user-select: none;
+  z-index: 25;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  animation: whisperLoop 9.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.hero-flower-whisper:hover {
+  filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.9));
+}
+
+.hero-flower-whisper:active {
+  transform: scale(0.95);
+}
+
+.hero-flower-whisper span {
+  display: inline-block;
+  font-family: 'Prompt', 'Mitr', -apple-system, sans-serif;
+  font-size: clamp(1.15rem, 3.8vw, 1.45rem);
+  font-weight: 600;
+  color: #fff9e6;
+  letter-spacing: 0.6px;
+  text-shadow:
+    0 0 10px rgba(251, 191, 36, 0.8),
+    0 0 22px rgba(245, 158, 11, 0.6),
+    0 2px 8px rgba(0, 0, 0, 0.85);
+  white-space: nowrap;
+  animation: whisperFloatSway 3.6s ease-in-out infinite alternate;
+}
+
+/* Gentle floating & subtle swaying drift */
+@keyframes whisperFloatSway {
+  0% {
+    transform: translateY(0px) rotate(-1deg);
+  }
+
+  50% {
+    transform: translateY(-6px) rotate(1deg);
+  }
+
+  100% {
+    transform: translateY(-11px) rotate(-0.5deg);
+  }
+}
+
+/* Loop: Appear (1s) -> Stay (2.5s) -> Fade out (1s) -> Wait 5 seconds (5s) -> Repeat */
+@keyframes whisperLoop {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.95);
+    pointer-events: none;
+  }
+
+  10.5% {
+    /* ~1.0s: fully emerged */
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+
+  36.8% {
+    /* ~3.5s: visible for 2.5s */
+    opacity: 1;
+    transform: translateY(-2px) scale(1);
+    pointer-events: auto;
+  }
+
+  47.4% {
+    /* ~4.5s: dissolved */
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+    pointer-events: none;
+  }
+
+  100% {
+    /* 47.4% to 100% = 5.0 seconds wait in complete invisibility */
+    opacity: 0;
+    transform: translateY(12px) scale(0.95);
+    pointer-events: none;
+  }
+}
+
+/* Cute Floating Action Prompt Above Sunflower Head — Pure Text Only */
+.hero-flower-prompt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: clamp(4px, 1vh, 14px);
+  cursor: pointer;
+  user-select: none;
+  z-index: 15;
+  animation: heroPromptFloat 2.6s ease-in-out infinite alternate;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hero-flower-prompt:hover {
+  transform: translateY(-6px) scale(1.08);
+  filter: drop-shadow(0 6px 20px rgba(245, 158, 11, 0.55));
+}
+
+.hero-flower-prompt:active {
+  transform: scale(0.95);
+}
+
+.prompt-pure-text {
+  font-family: var(--font-handwriting);
+  font-size: clamp(1.35rem, 4.6vw, 1.85rem);
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffffff 0%, #fef08a 45%, #f59e0b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.6px;
+  filter: drop-shadow(0 2px 8px rgba(245, 158, 11, 0.5)) drop-shadow(0 0 14px rgba(251, 191, 36, 0.35));
+  position: relative;
+  transition: filter 0.3s ease;
+}
+
+@keyframes heroPromptFloat {
+  0% {
+    transform: translateY(0);
+    filter: drop-shadow(0 2px 8px rgba(245, 158, 11, 0.45));
+  }
+
+  100% {
+    transform: translateY(-8px);
+    filter: drop-shadow(0 4px 14px rgba(251, 191, 36, 0.6)) drop-shadow(0 0 16px rgba(254, 240, 138, 0.4));
+  }
+}
+
+.flower-glow-ring {
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(85vw, 420px);
+  height: min(85vw, 420px);
+  border-radius: 50%;
+  background: radial-gradient(circle,
+      rgba(253, 224, 71, 0.2) 0%,
+      rgba(245, 158, 11, 0.08) 35%,
+      transparent 70%);
+  filter: blur(40px);
+  animation: glowPulse 5s infinite ease-in-out alternate;
+  pointer-events: none;
+  z-index: 2;
+}
+
+@keyframes glowPulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.95);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(1.08);
+    opacity: 0.85;
+  }
+}
+
+/* Sway Plant Wrapper (Physics-like Wind Sway) */
+.sway-plant-wrapper {
+  position: relative;
+  width: clamp(200px, 46vw, 290px);
+  height: clamp(260px, 50vh, 410px);
+  max-height: 100%;
+  transform-origin: bottom center;
+  animation: windBreezePhysics 4.6s ease-in-out infinite alternate;
+  cursor: pointer;
+  filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.35)) drop-shadow(0 0 25px rgba(245, 158, 11, 0.2));
+  transition: filter 0.3s ease;
+  touch-action: manipulation;
+  z-index: 10;
+}
+
+.sway-plant-wrapper:hover {
+  filter: drop-shadow(0 0 15px rgba(251, 191, 36, 0.5)) drop-shadow(0 0 35px rgba(245, 158, 11, 0.3));
+}
+
+.plant-stem-container {
+  width: 100%;
+  height: 100%;
+}
+
+.hero-sunflower-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Stem Sway — blends with warm sunset background */
+.plant-stem {
+  transform-origin: bottom center;
+  animation: stemFlex 4.6s ease-in-out infinite alternate;
+  mix-blend-mode: multiply;
+  filter: saturate(0.85);
+}
+
+@keyframes stemFlex {
+  0% {
+    transform: rotate(-3deg);
+  }
+
+  50% {
+    transform: rotate(1.5deg);
+  }
+
+  100% {
+    transform: rotate(4deg);
+  }
+}
+
+/* Flower Head Sway */
+.flower-head-group {
+  transform-origin: center center;
+  animation: flowerHeadBreeze 4.6s ease-in-out infinite alternate;
+  transition: transform 0.2s ease;
+}
+
+@keyframes flowerHeadBreeze {
+  0% {
+    transform: translate(150px, 160px) rotate(-6deg) scale(0.98);
+  }
+
+  45% {
+    transform: translate(150px, 158px) rotate(2deg) scale(1.02);
+  }
+
+  100% {
+    transform: translate(150px, 162px) rotate(7deg) scale(1);
+  }
+}
+
+/* Leaves fluttering in breeze */
+.leaf-left {
+  transform-origin: 148px 300px;
+  animation: leafFlutterLeft 3.8s ease-in-out infinite alternate;
+}
+
+@keyframes leafFlutterLeft {
+  0% {
+    transform: rotate(-6deg) scale(0.96);
+  }
+
+  100% {
+    transform: rotate(4deg) scale(1.02);
+  }
+}
+
+.leaf-right {
+  transform-origin: 152px 360px;
+  animation: leafFlutterRight 4.2s ease-in-out infinite alternate 0.5s;
+}
+
+@keyframes leafFlutterRight {
+  0% {
+    transform: rotate(5deg) scale(0.97);
+  }
+
+  100% {
+    transform: rotate(-4deg) scale(1.03);
+  }
+}
+
+.leaf-upper {
+  transform-origin: 149px 220px;
+  animation: leafFlutterLeft 3.2s ease-in-out infinite alternate 0.3s;
+}
+
+/* Wind Gust visual lines */
+.wind-gust {
+  position: absolute;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.wind-gust-1 {
+  top: 25%;
+  left: -80px;
+  width: 140px;
+  animation: windGustMove 3.6s infinite ease-out 1s;
+}
+
+.wind-gust-2 {
+  top: 45%;
+  left: -100px;
+  width: 180px;
+  animation: windGustMove 4.2s infinite ease-out 2.2s;
+}
+
+@keyframes windGustMove {
+  0% {
+    transform: translateX(0) scaleX(0.4);
+    opacity: 0;
+  }
+
+  30% {
+    opacity: 0.6;
+  }
+
+  70% {
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: translateX(380px) scaleX(1.3);
+    opacity: 0;
+  }
+}
+
+/* Natural Wind Swaying Animation for entire plant */
+@keyframes windBreezePhysics {
+  0% {
+    transform: rotate(-4.5deg) skewX(-1.5deg);
+  }
+
+  35% {
+    transform: rotate(2deg) skewX(0.8deg);
+  }
+
+  70% {
+    transform: rotate(5deg) skewX(2.2deg);
+  }
+
+  100% {
+    transform: rotate(-3deg) skewX(-1deg);
+  }
+}
+
+/* Hide hint pill & footer — clean minimal UI */
+.tap-hint-pill,
+.hero-footer {
+  display: none;
+}
+
+
+/* --------------------------------------------------------------------------
+   PAGE 2: SUNFLOWER GARDEN / MEADOW SECTION
+   -------------------------------------------------------------------------- */
+#garden-view {
+  background: #fef3c7;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Day Background — sunflower field panorama */
+.garden-scenery-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('assets/sunflower_field_bg.jpg?v=nature1') center center / cover no-repeat;
+  filter: brightness(1.02) saturate(1.08);
+  transform: scale(1.03);
+  transition: filter 2s ease, transform 14s ease-out;
+}
+
+/* Night Overlay — same background image + dark CSS layer */
+.garden-night-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Dark gradient overlay to turn day into night */
+  background:
+    linear-gradient(180deg,
+      rgba(6, 12, 36, 0.90) 0%,
+      rgba(12, 20, 52, 0.78) 35%,
+      rgba(18, 28, 64, 0.62) 65%,
+      rgba(8, 14, 32, 0.85) 100%);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 2s cubic-bezier(0.4, 0, 0.2, 1), visibility 2s cubic-bezier(0.4, 0, 0.2, 1), background 1.8s ease;
+  z-index: 5;
+  cursor: crosshair;
+}
+
+/* Night mode: show dark overlay, desaturate + cool the day image */
+#garden-view.night-mode .garden-night-bg {
+  opacity: 1;
+  visibility: visible;
+}
+
+#garden-view.night-mode .garden-scenery-bg {
+  filter: brightness(0.38) saturate(0.35) hue-rotate(185deg);
+  transform: scale(1.03);
+  transition: filter 2s ease, opacity 1.8s ease;
+}
+
+/* Seamless blend: When stargaze video is active, blend background with the video */
+#garden-view.stargaze-video-active {
+  background: #020308;
+  transition: background 1.8s ease;
+}
+
+#garden-view.stargaze-video-active .garden-night-bg {
+  background: #020308;
+  transition: background 1.8s ease;
+}
+
+#garden-view.stargaze-video-active .garden-scenery-bg {
+  opacity: 0;
+  transition: opacity 1.8s ease;
+}
+
+#garden-view.stargaze-video-active .celestial-moon {
+  opacity: 0.12;
+  filter: blur(2px);
+  transform: scale(0.85);
+  transition: opacity 1.8s ease, transform 1.8s ease, filter 1.8s ease;
+}
+
+#garden-view.stargaze-video-active .twinkling-stars-layer {
+  opacity: 0.28;
+  transition: opacity 1.8s ease;
+}
+
+/* Hide counter pill during video playback, returns when music/video ends or user returns to evening */
+#garden-view.stargaze-video-active #counter-pill,
+#garden-view.stargaze-video-active .hud-counter-pill {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: translateY(-24px) scale(0.9) !important;
+  pointer-events: none !important;
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s ease !important;
+}
+
+/* Stargaze Background Video (Sequential playback of IMG_0120 & IMG_0119) */
+.stargaze-bg-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  opacity: 0;
+  pointer-events: auto;
+  cursor: pointer;
+  z-index: 2;
+  transition: opacity 1.8s ease;
+  filter: brightness(0.92) contrast(1.02);
+}
+
+#garden-view.night-mode .stargaze-bg-video.active {
+  opacity: 0.95;
+}
+
+/* Stargaze Flank Stars (Dense sparkling stars on the left and right of the video) */
+.stargaze-flank-stars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 1.8s ease;
+  overflow: hidden;
+}
+
+#garden-view.stargaze-video-active .stargaze-flank-stars {
+  opacity: 1;
+}
+
+.flank-stars-cluster {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: clamp(160px, 34vw, 560px);
+  pointer-events: none;
+}
+
+.flank-stars-cluster.flank-left {
+  left: 0;
+}
+
+.flank-stars-cluster.flank-right {
+  right: 0;
+}
+
+.flank-star {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-main), serif;
+  user-select: none;
+  pointer-events: none;
+  line-height: 1;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.95), 0 0 20px rgba(186, 230, 253, 0.8), 0 0 32px rgba(254, 240, 138, 0.6);
+  animation: flankStarTwinkle var(--twinkle-dur, 2s) ease-in-out infinite alternate var(--twinkle-delay, 0s);
+  will-change: transform, opacity;
+}
+
+@keyframes flankStarTwinkle {
+  0% {
+    opacity: 0.15;
+    transform: scale(0.65) rotate(0deg);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.35) rotate(14deg);
+    filter: drop-shadow(0 0 8px #ffffff);
+  }
+
+  100% {
+    opacity: 0.35;
+    transform: scale(0.85) rotate(-10deg);
+  }
+}
+
+/* ==========================================================================
+   STARGAZE END TYPEWRITER LOVE MESSAGE
+   ========================================================================== */
+.stargaze-end-message-box {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px;
+  z-index: 99999;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  background: rgba(3, 5, 14, 0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stargaze-end-message-box.active {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+.stargaze-message-card {
+  position: relative;
+  width: 100%;
+  max-width: min(92vw, 540px);
+  background: linear-gradient(165deg, rgba(15, 23, 42, 0.88) 0%, rgba(30, 27, 75, 0.92) 100%);
+  border: 1.5px solid rgba(251, 191, 36, 0.55);
+  box-shadow: 0 25px 65px rgba(0, 0, 0, 0.8), 0 0 45px rgba(245, 158, 11, 0.28);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: 32px;
+  padding: 34px 28px 28px;
+  text-align: center;
+  transform: scale(0.92) translateY(18px);
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.stargaze-end-message-box.active .stargaze-message-card {
+  transform: scale(1) translateY(0);
+}
+
+.stargaze-message-deco {
+  font-size: 1.4rem;
+  letter-spacing: 6px;
+  margin-bottom: 16px;
+  animation: floatSparkles 2.5s infinite ease-in-out;
+}
+
+.stargaze-message-body {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.stargaze-message-text {
+  display: inline;
+  font-family: 'Itim', cursive, sans-serif;
+  font-size: clamp(1.22rem, 4.4vw, 1.65rem);
+  line-height: 1.7;
+  color: #fffbeb;
+  text-shadow: 0 2px 14px rgba(251, 191, 36, 0.45);
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.stargaze-typewriter-cursor {
+  display: inline-block;
+  font-weight: 300;
+  font-size: clamp(1.22rem, 4.4vw, 1.65rem);
+  color: #fbbf24;
+  margin-left: 3px;
+  animation: blinkCursor 0.75s steps(2, start) infinite;
+  vertical-align: baseline;
+}
+
+@keyframes blinkCursor {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+.stargaze-message-sub {
+  margin-top: 18px;
+  font-size: 0.95rem;
+  color: #fde68a;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 1s ease, transform 1s ease;
+  font-family: var(--font-main);
+  letter-spacing: 0.5px;
+}
+
+.stargaze-message-sub.visible {
+  opacity: 0.9;
+  transform: translateY(0);
+}
+
+.stargaze-msg-close-btn {
+  margin-top: 22px;
+  padding: 10px 26px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(251, 191, 36, 0.65);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(217, 119, 6, 0.4) 100%);
+  color: #fef3c7;
+  font-family: var(--font-main);
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  transition: all 0.25s ease;
+}
+
+.stargaze-msg-close-btn:hover {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #ffffff;
+  transform: scale(1.05);
+  box-shadow: 0 8px 26px rgba(245, 158, 11, 0.5);
+}
+
+/* Celestial Moon Glow */
+.celestial-moon {
+  position: absolute;
+  top: 7%;
+  right: 18%;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffffff 0%, #fffbeb 30%, #fef3c7 65%, #fde68a 100%);
+  box-shadow:
+    0 0 20px rgba(255, 255, 255, 0.9),
+    0 0 45px rgba(254, 240, 138, 0.7),
+    0 0 80px rgba(250, 204, 21, 0.4);
+  pointer-events: none;
+  z-index: 6;
+}
+
+.moon-halo {
+  position: absolute;
+  top: -40px;
+  left: -40px;
+  width: 164px;
+  height: 164px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(254, 243, 199, 0.35) 0%, rgba(253, 230, 138, 0.15) 45%, transparent 75%);
+  animation: moonPulse 4s infinite ease-in-out alternate;
+}
+
+@keyframes moonPulse {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: scale(1.12);
+    opacity: 1;
+  }
+}
+
+/* Twinkling Stars Layer (Cute 4-Point Pixel Stars) */
+.twinkling-stars-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 6;
+}
+
+.twinkle-star {
+  position: absolute;
+  background: #ffffff;
+  box-shadow: 0 0 5px #ffffff, 0 0 10px #bae6fd;
+  clip-path: polygon(50% 0%, 65% 35%, 100% 50%, 65% 65%, 50% 100%, 35% 65%, 0% 50%, 35% 35%);
+  animation: starTwinkle var(--twinkle-dur, 2.5s) steps(4, start) infinite var(--twinkle-delay, 0s);
+}
+
+@keyframes starTwinkle {
+
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.7);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.4);
+  }
+}
+
+/* Shooting Stars (ดาวตก) */
+.shooting-stars-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 65%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 7;
+}
+
+.shooting-star {
+  position: absolute;
+  height: 2px;
+  background: linear-gradient(90deg, #ffffff 0%, rgba(224, 242, 254, 0.8) 40%, transparent 100%);
+  border-radius: 999px;
+  filter: drop-shadow(0 0 8px #38bdf8);
+  opacity: 0;
+  transform: rotate(-35deg);
+  pointer-events: none;
+}
+
+.shooting-star.active {
+  animation: shootMeteor 1.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+@keyframes shootMeteor {
+  0% {
+    transform: translate(0, 0) rotate(-35deg) scaleX(0.1);
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  70% {
+    opacity: 0.85;
+  }
+
+  100% {
+    transform: translate(-420px, 280px) rotate(-35deg) scaleX(1.2);
+    opacity: 0;
+  }
+}
+
+.sky-light-rays {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 55%;
+  background: radial-gradient(circle at 35% 20%, rgba(255, 255, 255, 0.45) 0%, rgba(251, 191, 36, 0.25) 40%, transparent 80%);
+  pointer-events: none;
+}
+
+/* Meadow Top HUD */
+.garden-hud {
+  position: absolute;
+  top: max(14px, env(safe-area-inset-top));
+  left: 0;
+  width: 100%;
+  padding: 0 max(16px, env(safe-area-inset-left));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.hud-btn {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: rgba(255, 250, 240, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(255, 220, 150, 0.7);
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.18), 0 2px 6px rgba(0, 0, 0, 0.06);
+  font-family: var(--font-main);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #92400e;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.hud-btn:hover {
+  transform: translateY(-3px) scale(1.04);
+  background: rgba(255, 253, 245, 0.96);
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3), 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.hud-counter-pill {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(14px);
+  border: 1.5px solid #fbbf24;
+  box-shadow: 0 8px 24px rgba(217, 119, 6, 0.22);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #78350f;
+  animation: counterPillFloat 3.5s ease-in-out infinite alternate;
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s ease, background 0.3s ease, border-color 0.3s ease;
+}
+
+@keyframes counterPillFloat {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-3px);
+  }
+}
+
+/* Garden Welcome Tip Banner */
+.garden-banner {
+  position: absolute;
+  top: 72px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 32px);
+  max-width: 500px;
+  z-index: 45;
+  background: rgba(255, 253, 245, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 20px;
+  border: 1.5px solid rgba(251, 191, 36, 0.45);
+  box-shadow: 0 8px 28px rgba(245, 158, 11, 0.15), 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 10px 15px;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.garden-banner.dismissed {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-24px);
+  pointer-events: none;
+}
+
+.banner-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.banner-flower {
+  font-size: 1.8rem;
+}
+
+.banner-text {
+  flex: 1;
+  font-size: 0.85rem;
+  line-height: 1.35;
+  color: #451a03;
+}
+
+.banner-text strong {
+  display: block;
+  font-size: 0.95rem;
+  color: #78350f;
+  margin-bottom: 2px;
+}
+
+.banner-text .highlight-badge {
+  background: #fef08a;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  color: #b45309;
+}
+
+.banner-close {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: #a8a29e;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.banner-close:hover {
+  color: #44403c;
+}
+
+/* Meadow Scroll / Field Stage */
+.sunflower-meadow-scroll {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.flower-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  contain: layout;
+}
+
+.layer-back {
+  z-index: 10;
+  filter: blur(1.5px) opacity(0.85);
+}
+
+.layer-mid {
+  z-index: 20;
+}
+
+.layer-front {
+  z-index: 30;
+  pointer-events: auto;
+}
+
+/* --------------------------------------------------------------------------
+   INTERACTIVE SUNFLOWERS IN THE MEADOW
+   -------------------------------------------------------------------------- */
+.field-sunflower {
+  position: absolute;
+  transform: translateX(-50%);
+  transform-origin: bottom center;
+  cursor: pointer;
+  user-select: none;
+  pointer-events: auto;
+  will-change: transform;
+  contain: layout style;
+  opacity: 1;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 1.8s cubic-bezier(0.4, 0, 0.2, 1), filter 1.8s cubic-bezier(0.4, 0, 0.2, 1);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.field-sunflower svg {
+  filter: drop-shadow(0 4px 12px rgba(180, 83, 9, 0.22));
+  transition: filter 1s ease;
+  transform-origin: bottom center;
+}
+
+.field-sunflower:hover {
+  transform: translateX(-50%) scale(1.12) translateY(-6px);
+  z-index: 40;
+}
+
+.field-sunflower:active {
+  transform: translateX(-50%) scale(0.95);
+}
+
+/* Tap / Click Bounce Animation (Springy lively bounce for all sunflowers) */
+@keyframes flowerTapBounce {
+  0% {
+    transform: translateX(-50%) scale(1) translateY(0);
+  }
+
+  30% {
+    transform: translateX(-50%) scale(1.25) translateY(-18px);
+  }
+
+  60% {
+    transform: translateX(-50%) scale(0.95) translateY(-2px);
+  }
+
+  85% {
+    transform: translateX(-50%) scale(1.06) translateY(-6px);
+  }
+
+  100% {
+    transform: translateX(-50%) scale(1) translateY(0);
+  }
+}
+
+.field-sunflower.flower-tap-bounce {
+  animation: flowerTapBounce 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  z-index: 60 !important;
+}
+
+/* Swaying wind animation classes with varied phase offsets */
+.sway-phase-0 {
+  animation: meadowFlowerSway 4.4s ease-in-out infinite alternate;
+}
+
+.sway-phase-1 {
+  animation: meadowFlowerSway 3.8s ease-in-out infinite alternate 0.7s;
+}
+
+.sway-phase-2 {
+  animation: meadowFlowerSway 4.8s ease-in-out infinite alternate 1.3s;
+}
+
+.sway-phase-3 {
+  animation: meadowFlowerSway 4.1s ease-in-out infinite alternate 2.1s;
+}
+
+.sway-phase-4 {
+  animation: meadowFlowerSway 5.1s ease-in-out infinite alternate 2.8s;
+}
+
+@keyframes meadowFlowerSway {
+  0% {
+    transform: translateX(-50%) rotate(-5deg) skewX(-2deg);
+  }
+
+  50% {
+    transform: translateX(-50%) rotate(1.5deg) skewX(0.5deg);
+  }
+
+  100% {
+    transform: translateX(-50%) rotate(6deg) skewX(2.5deg);
+  }
+}
+
+/* SPECIAL SUNFLOWERS (Soft, steady gentle golden glow - no blinking) */
+.field-sunflower.special-flower {
+  transition: filter 0.4s ease, opacity 0.4s ease;
+  cursor: pointer;
+}
+
+.field-sunflower.special-flower.flower-target {
+  filter: drop-shadow(0 0 10px var(--flower-glow, rgba(245, 158, 11, 0.55)));
+  opacity: 1;
+}
+
+.field-sunflower.special-flower.flower-discovered {
+  filter: drop-shadow(0 0 7px rgba(245, 158, 11, 0.35));
+  opacity: 0.98;
+}
+
+.field-sunflower.special-flower.flower-locked {
+  filter: none;
+  opacity: 0.88;
+}
+
+/* Gentle wiggle when clicking a locked flower */
+@keyframes gentleLockedWiggle {
+
+  0%,
+  100% {
+    transform: translateX(-50%) rotate(0deg);
+  }
+
+  25% {
+    transform: translateX(-50%) rotate(-4deg);
+  }
+
+  75% {
+    transform: translateX(-50%) rotate(4deg);
+  }
+}
+
+.field-sunflower.special-flower.locked-wiggle {
+  animation: gentleLockedWiggle 0.4s ease-in-out !important;
+}
+
+.pixel-sparkle-halo {
+  display: none !important;
+}
+
+/* Special Flower Floating Beacon (Removed per user request) */
+.special-flower-beacon {
+  display: none !important;
+}
+
+/* Sequential Positioning for the 3 Special Flowers */
+.special-flower-0 {
+  left: 18%;
+  bottom: 12%;
+}
+
+.special-flower-1 {
+  left: 82%;
+  bottom: 12%;
+}
+
+.special-flower-2 {
+  left: 50%;
+  bottom: 17%;
+}
+
+/* Bottom Grass & Foliage Vignette for seamless cartoon blend - Subtle & Behind front flowers */
+.meadow-bottom-foliage {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: clamp(35px, 6vh, 55px);
+  background: linear-gradient(0deg, rgba(20, 38, 12, 0.82) 0%, rgba(38, 68, 24, 0.35) 55%, transparent 100%);
+  pointer-events: none;
+  z-index: 25;
+  /* BEHIND layer-front (z-index 30) so sunflowers are NEVER blocked! */
+  transition: background 1.5s ease;
+}
+
+#garden-view.night-mode .meadow-bottom-foliage {
+  background: linear-gradient(0deg, rgba(5, 12, 22, 0.9) 0%, rgba(10, 24, 42, 0.45) 55%, transparent 100%);
+  opacity: 0.15;
+  transition: opacity 1.8s ease;
+}
+
+/* Warm cartoon drop-shadow for daytime sunflowers */
+.field-sunflower svg {
+  filter: drop-shadow(0 4px 10px rgba(180, 83, 9, 0.28));
+  transition: filter 1.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Night Mode: All sunflowers gradually fade away into darkness until completely invisible */
+#garden-view.night-mode .field-sunflower {
+  opacity: 0 !important;
+  filter: brightness(0.05) saturate(0) !important;
+  pointer-events: none !important;
+  transition: opacity 1.8s cubic-bezier(0.4, 0, 0.2, 1), filter 1.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+#garden-view.night-mode .field-sunflower.special-flower {
+  opacity: 0 !important;
+  filter: brightness(0.05) saturate(0) !important;
+  pointer-events: none !important;
+  transition: opacity 1.8s cubic-bezier(0.4, 0, 0.2, 1), filter 1.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+#garden-view.night-mode .field-sunflower svg {
+  opacity: 0 !important;
+  filter: brightness(0.05) saturate(0) !important;
+  transition: opacity 1.8s cubic-bezier(0.4, 0, 0.2, 1), filter 1.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Night mode HUD & Banner adjustments */
+#garden-view.night-mode .garden-hud .hud-btn {
+  background: rgba(15, 23, 42, 0.78);
+  border-color: rgba(147, 197, 253, 0.35);
+  color: #e0f2fe;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+#garden-view.night-mode .hud-counter-pill {
+  background: rgba(15, 23, 42, 0.85);
+  border-color: #38bdf8;
+  color: #bae6fd;
+  box-shadow: 0 8px 24px rgba(14, 165, 233, 0.25);
+}
+
+#garden-view.night-mode .garden-banner {
+  background: rgba(15, 23, 42, 0.92);
+  border-color: rgba(56, 189, 248, 0.45);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+}
+
+#garden-view.night-mode .banner-text {
+  color: #cbd5e1;
+}
+
+#garden-view.night-mode .banner-text strong {
+  color: #f8fafc;
+}
+
+#garden-view.night-mode .garden-footer-hint {
+  background: rgba(15, 23, 42, 0.85);
+  border-color: rgba(147, 197, 253, 0.3);
+  color: #e0f2fe;
+}
+
+/* Hide Welcome Banner & Bottom Legend per user request */
+#garden-banner,
+.garden-banner,
+#garden-footer-hint,
+.garden-footer-hint,
+.legend-container {
+  display: none !important;
+}
+
+.legend-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.78rem;
+  color: #451a03;
+  font-weight: 500;
+}
+
+.legend-close-btn {
+  background: rgba(0, 0, 0, 0.06);
+  border: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  line-height: 1;
+  color: #78716c;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 2px;
+  transition: all 0.2s ease;
+}
+
+.legend-close-btn:hover {
+  background: rgba(0, 0, 0, 0.14);
+  color: #1c1917;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.legend-dot.normal {
+  background: #f59e0b;
+}
+
+.legend-dot.special {
+  background: linear-gradient(135deg, #ff477e, #a855f7);
+  box-shadow: 0 0 8px rgba(255, 71, 126, 0.8);
+}
+
+/* --------------------------------------------------------------------------
+   FLOATING COMPLIMENT TOAST (WHEN NORMAL FLOWERS ARE CLICKED)
+   -------------------------------------------------------------------------- */
+.compliment-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 120;
+}
+
+.compliment-bubble {
+  position: absolute;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid #f59e0b;
+  box-shadow: 0 8px 24px rgba(217, 119, 6, 0.25);
+  font-family: var(--font-handwriting);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #9a3412;
+  white-space: nowrap;
+  animation: complimentFloatUp 2.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  pointer-events: none;
+}
+
+@keyframes complimentFloatUp {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 0) scale(0.6);
+  }
+
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -25px) scale(1.05);
+  }
+
+  30% {
+    transform: translate(-50%, -30px) scale(1);
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -85px) scale(0.95);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   MODAL: MEMORY CARD / POLAROID LOVE LETTER
+   -------------------------------------------------------------------------- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+  padding: 16px;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.modal-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(30, 20, 15, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.modal-card {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 440px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: linear-gradient(160deg, #fffef9 0%, #fff8f0 100%);
+  border-radius: 32px;
+  padding: 26px 22px 22px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(255, 220, 140, 0.35), 0 0 50px rgba(251, 191, 36, 0.15);
+  border: none;
+  transform: scale(0.85);
+  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.modal-card::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+.modal-overlay.active .modal-card {
+  transform: scale(1);
+}
+
+.modal-close-btn {
+  display: none !important;
+}
+
+/* Memory Card Header */
+.memory-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-right: 36px;
+}
+
+.memory-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #fef08a;
+  color: #854d0e;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.memory-date {
+  font-size: 0.82rem;
+  color: #78716c;
+  font-style: italic;
+}
+
+/* Polaroid Photo Style */
+.polaroid-wrapper {
+  position: relative;
+  background: #ffffff;
+  padding: 12px 12px 14px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f0ede6;
+  transform: rotate(-1deg);
+  margin-bottom: 18px;
+  transition: transform 0.3s ease;
+}
+
+.polaroid-wrapper:hover {
+  transform: rotate(0deg);
+}
+
+.polaroid-pin {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.2rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  z-index: 5;
+}
+
+.polaroid-photo-container {
+  position: relative;
+  width: 100%;
+  height: auto;
+  max-height: 480px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fdfaf6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.polaroid-img {
+  width: 100%;
+  height: auto;
+  max-height: 480px;
+  object-fit: contain;
+  display: block;
+  border-radius: 6px;
+  transition: none;
+}
+
+.polaroid-wrapper:hover .polaroid-img {
+  transform: none;
+}
+
+.polaroid-caption {
+  display: none !important;
+}
+
+/* Love Letter Details */
+.letter-content-box {
+  text-align: center;
+  padding: 0 4px;
+}
+
+.letter-title {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  color: #451a03;
+  margin-bottom: 6px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+.letter-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 10px 0 16px;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #fed7aa, transparent);
+}
+
+.divider-icon {
+  font-size: 1.1rem;
+}
+
+.letter-text {
+  font-size: 0.98rem;
+  line-height: 1.85;
+  color: #3b281c;
+  text-align: left;
+  white-space: pre-line;
+  margin-bottom: 18px;
+  padding: 0 4px;
+  word-break: break-word;
+}
+
+.letter-quote-box {
+  background: #fffbeb;
+  border-left: 3px solid #f59e0b;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 6px;
+  font-family: var(--font-handwriting);
+  font-size: 1.15rem;
+  color: #92400e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.quote-mark {
+  font-size: 1.4rem;
+  opacity: 0.6;
+}
+
+/* Modal Actions & Confirm Button - Hidden as requested */
+.modal-actions,
+.modal-confirm-btn {
+  display: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   SECRET GRAND FINALE CELEBRATION MODAL (Hidden per user request, directly transitions to Stargazing)
+   -------------------------------------------------------------------------- */
+#finale-modal {
+  display: none !important;
+}
+
+.finale-card {
+  max-width: 480px;
+  text-align: center;
+  background: linear-gradient(160deg, #fffef9 0%, #fff5f8 50%, #fffbeb 100%);
+  border: none;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2), 0 0 0 2px rgba(253, 230, 138, 0.5), 0 0 60px rgba(251, 191, 36, 0.2);
+}
+
+.finale-trophy {
+  font-size: 3rem;
+  margin-bottom: 8px;
+  animation: heartBeat 1.6s infinite ease-in-out;
+}
+
+.finale-title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  color: #78350f;
+  margin-bottom: 4px;
+}
+
+.finale-subtitle {
+  font-size: 0.95rem;
+  color: #9a3412;
+  margin-bottom: 16px;
+}
+
+.certificate-border {
+  border: 2px dashed rgba(245, 158, 11, 0.5);
+  border-radius: 20px;
+  padding: 18px;
+  background: linear-gradient(160deg, rgba(255, 251, 235, 0.6) 0%, rgba(255, 240, 250, 0.4) 100%);
+  margin-bottom: 20px;
+}
+
+.cert-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: #92400e;
+  margin-bottom: 10px;
+}
+
+.cert-text {
+  font-family: var(--font-handwriting);
+  font-size: 1.3rem;
+  line-height: 1.6;
+  color: #451a03;
+  margin-bottom: 14px;
+}
+
+.cert-signature {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #fde68a;
+  padding-top: 10px;
+}
+
+.cert-seal {
+  font-weight: 700;
+  font-size: 0.78rem;
+  color: #e11d48;
+  border: 2px solid #fda4af;
+  background: linear-gradient(135deg, #fff1f2, #fce7f3);
+  padding: 4px 10px;
+  border-radius: 999px;
+  letter-spacing: 1px;
+}
+
+.cert-from {
+  font-size: 0.85rem;
+  font-style: italic;
+  color: #78716c;
+}
+
+.sparkle-action-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #ec4899 0%, #f43f5e 50%, #f59e0b 100%);
+  color: #ffffff;
+  font-family: var(--font-main);
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(244, 63, 94, 0.4);
+  transition: all 0.25s ease;
+}
+
+.sparkle-action-btn:hover {
+  transform: scale(1.03);
+  box-shadow: 0 14px 30px rgba(244, 63, 94, 0.55);
+}
+
+.night-launch-btn {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%) !important;
+  box-shadow: 0 10px 28px rgba(168, 85, 247, 0.45) !important;
+  font-size: 1.05rem !important;
+}
+
+.night-launch-btn:hover {
+  box-shadow: 0 14px 34px rgba(168, 85, 247, 0.6) !important;
+}
+
+.secondary-action-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 999px;
+  border: 1px solid #fde68a;
+  background: rgba(255, 255, 255, 0.95);
+  color: #b45309;
+  font-family: var(--font-main);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.secondary-action-btn:hover {
+  background: #fffbeb;
+  transform: translateY(-2px);
+}
+
+/* --------------------------------------------------------------------------
+   UTILITY ANIMATIONS
+   -------------------------------------------------------------------------- */
+.animate-fade-down {
+  animation: fadeDown 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.delay-1 {
+  animation-delay: 0.15s;
+}
+
+.delay-2 {
+  animation-delay: 0.3s;
+}
+
+.delay-3 {
+  animation-delay: 0.45s;
+}
+
+@keyframes fadeDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-bounce-soft {
+  animation: bounceSoft 2.5s ease-in-out infinite;
+}
+
+@keyframes bounceSoft {
+
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  50% {
+    transform: translateX(-50%) translateY(-8px);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE DESIGN (MOBILE, TABLET & IPAD PERFECTION)
+   -------------------------------------------------------------------------- */
+
+/* 1. TABLET & IPAD (Landscape & Portrait up to 1024px) */
+@media (max-width: 1024px) {
+  .hero-content {
+    max-width: 580px;
+    padding: max(20px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
+  }
+
+  .sway-plant-wrapper {
+    width: clamp(230px, 40vw, 290px);
+    height: clamp(300px, 48vh, 410px);
+  }
+
+  .garden-hud {
+    padding: 0 max(16px, env(safe-area-inset-left));
+    gap: 8px;
+  }
+
+  .hud-btn {
+    padding: 8px 16px;
+    font-size: 0.82rem;
+  }
+
+  .hud-counter-pill {
+    padding: 7px 16px;
+    font-size: 0.85rem;
+  }
+
+  .garden-banner {
+    top: 72px;
+    width: calc(100% - 32px);
+    max-width: 520px;
+  }
+
+  /* Responsive flower heights on tablet */
+  .field-sunflower svg {
+    width: auto !important;
+    height: clamp(170px, 24vh, 230px) !important;
+  }
+
+  .layer-back .field-sunflower svg {
+    height: clamp(80px, 12vh, 120px) !important;
+  }
+
+  .layer-mid .field-sunflower svg {
+    height: clamp(125px, 17vh, 170px) !important;
+  }
+
+  .modal-card {
+    max-width: 480px;
+    padding: 24px 20px 20px;
+  }
+}
+
+/* 2. SMALL TABLETS & LARGE PHONES (max-width: 768px - iPad Mini portrait, iPhone Plus/Max) */
+@media (max-width: 768px) {
+  .hero-surprise-card {
+    padding: 28px 16px 26px;
+    border-radius: 28px;
+    max-width: 440px;
+  }
+
+  .hero-badge {
+    padding: 7px 18px;
+    font-size: clamp(0.92rem, 3.2vw, 1.15rem);
+    white-space: nowrap;
+  }
+
+  .hero-title {
+    font-size: clamp(1.8rem, 6vw, 2.6rem);
+  }
+
+  .hero-subtitle {
+    font-size: clamp(1.05rem, 3.5vw, 1.35rem);
+    max-width: 380px;
+  }
+
+  .sway-plant-wrapper {
+    width: clamp(210px, 44vw, 270px);
+    height: clamp(280px, 46vh, 380px);
+  }
+
+  .hud-btn {
+    padding: 8px 13px;
+    font-size: 0.8rem;
+    gap: 5px;
+  }
+
+  .hud-counter-pill {
+    padding: 7px 14px;
+    font-size: 0.82rem;
+    gap: 6px;
+  }
+
+  .garden-banner {
+    top: 68px;
+    padding: 10px 14px;
+    border-radius: 18px;
+  }
+
+  .banner-flower {
+    font-size: 1.5rem;
+  }
+
+  .banner-text {
+    font-size: 0.82rem;
+  }
+
+  .banner-text strong {
+    font-size: 0.9rem;
+  }
+
+  /* Tablet Staggered Special Flowers */
+  .special-flower-0 {
+    left: 18% !important;
+    bottom: 14% !important;
+  }
+
+  .special-flower-1 {
+    left: 82% !important;
+    bottom: 14% !important;
+  }
+
+  .special-flower-2 {
+    left: 50% !important;
+    bottom: 20% !important;
+  }
+
+  .field-sunflower.special-flower svg {
+    height: clamp(135px, 19vh, 175px) !important;
+  }
+
+  .layer-front .field-sunflower:not(.special-flower) svg {
+    height: clamp(100px, 14vh, 130px) !important;
+  }
+
+  .layer-back .field-sunflower svg {
+    height: clamp(65px, 9vh, 90px) !important;
+  }
+
+  .layer-mid .field-sunflower svg {
+    height: clamp(95px, 13vh, 130px) !important;
+  }
+
+  .legend-container {
+    gap: 6px 12px;
+    font-size: 0.76rem;
+    padding: 5px 12px;
+  }
+
+  .polaroid-photo-container {
+    height: auto;
+    max-height: 440px;
+  }
+}
+
+/* 3. STANDARD MOBILE PHONES (max-width: 600px - iPhone 12/13/14/15, Galaxy, Pixel) */
+@media (max-width: 600px) {
+  .hero-content {
+    padding: max(16px, env(safe-area-inset-top)) 14px max(18px, env(safe-area-inset-bottom));
+  }
+
+  /* Audio widget on hero: compact icon + soundwave */
+  .audio-widget {
+    top: max(14px, env(safe-area-inset-top));
+    right: max(14px, env(safe-area-inset-right));
+  }
+
+  .audio-btn {
+    padding: 7px 12px;
+    font-size: 0.8rem;
+    gap: 6px;
+  }
+
+  .audio-label {
+    display: none;
+  }
+
+  /* Hero Sunflower */
+  .sway-plant-wrapper {
+    width: clamp(190px, 48vw, 250px);
+    height: clamp(250px, 48vh, 350px);
+  }
+
+  .hero-flower-prompt {
+    margin-bottom: clamp(4px, 1vh, 10px);
+  }
+
+  .prompt-pure-text {
+    font-size: clamp(1.2rem, 4.2vw, 1.55rem);
+  }
+
+  .hero-grass-ground {
+    height: clamp(65px, 11vh, 95px);
+  }
+
+  /* Garden Top HUD */
+  .garden-hud {
+    top: max(10px, env(safe-area-inset-top));
+    padding: 0 max(8px, env(safe-area-inset-left));
+    gap: 5px;
+  }
+
+  .hud-btn {
+    padding: 7px 11px;
+    font-size: 0.78rem;
+    border-radius: 999px;
+  }
+
+  .hud-back-text {
+    display: none;
+    /* Show only ← on mobile to save space */
+  }
+
+  .hud-btn-back {
+    padding: 7px 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  .hud-counter-pill {
+    padding: 6px 11px;
+    font-size: 0.78rem;
+    gap: 5px;
+  }
+
+  .counter-label-full {
+    display: none;
+    /* Shows "0 / 4 ดอก" instead of long text */
+  }
+
+  .hud-btn-night {
+    padding: 7px 11px;
+    font-size: 0.8rem;
+  }
+
+  #night-btn-label {
+    display: none;
+    /* Show only 🌙 / ☀️ icon on mobile */
+  }
+
+  .hud-btn-audio {
+    padding: 7px 11px;
+    font-size: 0.85rem;
+  }
+
+  /* Garden Banner */
+  .garden-banner {
+    top: 58px;
+    width: calc(100% - 20px);
+    padding: 9px 12px;
+    border-radius: 16px;
+  }
+
+  .banner-content {
+    gap: 8px;
+  }
+
+  .banner-flower {
+    font-size: 1.35rem;
+  }
+
+  .banner-text {
+    font-size: 0.78rem;
+    line-height: 1.3;
+  }
+
+  .banner-text strong {
+    font-size: 0.85rem;
+  }
+
+  /* Sunflowers in Meadow: Staggered 2-Tier Arch for Mobile
+     - Tier 1 (elevated): Pink (0), Gold (2), Opal (4)
+     - Tier 2 (lower): Orange (1), Violet (3)
+     - 20% and 80% positions completely prevent left/right edge clipping
+     - 13-17% vertical stagger eliminates any petal overlap
+     - Base elevated to prevent being blocked by footer bar
+  */
+  .special-flower-0 {
+    left: 18% !important;
+    bottom: 16% !important;
+  }
+
+  .special-flower-1 {
+    left: 82% !important;
+    bottom: 16% !important;
+  }
+
+  .special-flower-2 {
+    left: 50% !important;
+    bottom: 22% !important;
+  }
+
+  .field-sunflower.special-flower {
+    z-index: 35 !important;
+  }
+
+  .field-sunflower.special-flower svg {
+    height: clamp(115px, 17vh, 145px) !important;
+    filter: drop-shadow(0 0 10px var(--flower-glow, rgba(251, 191, 36, 0.6))) !important;
+  }
+
+  .layer-mid .field-sunflower svg {
+    height: clamp(75px, 11vh, 100px) !important;
+  }
+
+  .layer-back .field-sunflower svg {
+    height: clamp(50px, 8vh, 70px) !important;
+  }
+
+  /* Bottom Legend */
+  .garden-footer-hint {
+    bottom: max(6px, env(safe-area-inset-bottom));
+    width: calc(100% - 24px);
+    padding: 3px 8px;
+    background: rgba(255, 255, 255, 0.82);
+  }
+
+  .legend-container {
+    gap: 4px 8px;
+    font-size: 0.70rem;
+    padding: 3px 8px;
+  }
+
+  /* Polaroid Modal */
+  .modal-overlay {
+    padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
+  }
+
+  .modal-card {
+    max-width: 100%;
+    max-height: min(94vh, calc(100dvh - 24px));
+    padding: 18px 14px 16px;
+    border-radius: 22px;
+  }
+
+  .polaroid-photo-container {
+    height: auto;
+    max-height: 400px;
+  }
+
+  .polaroid-caption {
+    display: none !important;
+  }
+
+  .letter-title {
+    font-size: 1.3rem;
+  }
+
+  .letter-text {
+    font-size: 0.94rem;
+    line-height: 1.8;
+    text-align: left;
+    white-space: pre-line;
+  }
+
+  .quote-text {
+    font-size: 0.95rem;
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+
+  .modal-nav-group {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .modal-confirm-btn {
+    width: 100%;
+    padding: 10px 18px;
+    font-size: 0.85rem;
+  }
+
+  /* Finale Modal */
+  .finale-card {
+    max-width: 100%;
+    padding: 20px 14px;
+    border-radius: 24px;
+  }
+
+  .finale-trophy {
+    font-size: 2.2rem;
+  }
+
+  .finale-title {
+    font-size: 1.35rem;
+  }
+
+  .cert-text {
+    font-size: 1.15rem;
+    line-height: 1.55;
+  }
+
+  .cert-signature {
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+  }
+}
+
+/* 4. COMPACT MOBILE / EXTRA NARROW (< 380px - iPhone SE, small Galaxy) */
+@media (max-width: 380px) {
+  .hero-title {
+    font-size: 1.7rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.98rem;
+  }
+
+  .sway-plant-wrapper {
+    width: 190px;
+    height: clamp(230px, 45vh, 300px);
+  }
+
+  .hero-flower-prompt {
+    margin-bottom: 2px;
+  }
+
+  .prompt-pure-text {
+    font-size: 1.1rem;
+  }
+
+  .garden-hud {
+    padding: 0 6px;
+    gap: 4px;
+  }
+
+  .hud-btn {
+    padding: 6px 9px;
+    font-size: 0.74rem;
+  }
+
+  .hud-counter-pill {
+    padding: 5px 9px;
+    font-size: 0.74rem;
+  }
+
+  .special-flower-0 {
+    left: 18% !important;
+    bottom: 16% !important;
+  }
+
+  .special-flower-1 {
+    left: 82% !important;
+    bottom: 16% !important;
+  }
+
+  .special-flower-2 {
+    left: 50% !important;
+    bottom: 22% !important;
+  }
+
+  .field-sunflower.special-flower svg {
+    height: clamp(100px, 15vh, 125px) !important;
+  }
+
+  /* On extra narrow screens, hide non-special front flowers so special flowers remain prominent */
+  .layer-front .field-sunflower:not(.special-flower) {
+    display: none !important;
+  }
+
+  .legend-container {
+    font-size: 0.68rem;
+  }
+}
+
+/* 5. SHORT VIEWPORTS / MOBILE LANDSCAPE (height <= 540px and landscape) */
+@media (max-height: 540px) and (orientation: landscape) {
+  .hero-content {
+    padding: 8px 16px 12px;
+  }
+
+  .hero-badge {
+    padding: 5px 16px;
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+
+  .hero-title {
+    font-size: 1.45rem;
+    margin-top: 4px;
+  }
+
+  .hero-subtitle {
+    font-size: 0.95rem;
+    margin-top: 2px;
+    max-width: 500px;
+  }
+
+  .hero-flower-stage {
+    padding-bottom: 8px;
+  }
+
+  .sway-plant-wrapper {
+    width: 160px;
+    height: 180px;
+  }
+
+  .hero-flower-prompt {
+    margin-bottom: 0;
+  }
+
+  .prompt-pure-text {
+    font-size: 0.95rem;
+  }
+
+  .hero-grass-ground {
+    height: 48px;
+  }
+
+  .garden-hud {
+    top: 6px;
+    padding: 0 12px;
+  }
+
+  .hud-btn,
+  .hud-counter-pill {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+  }
+
+  .garden-banner {
+    display: none;
+    /* Hide welcome banner in landscape to conserve vertical space */
+  }
+
+  .special-flower-0 {
+    left: 18% !important;
+    bottom: 14% !important;
+  }
+
+  .special-flower-1 {
+    left: 82% !important;
+    bottom: 14% !important;
+  }
+
+  .special-flower-2 {
+    left: 50% !important;
+    bottom: 20% !important;
+  }
+
+  .field-sunflower svg {
+    height: clamp(80px, 26vh, 115px) !important;
+  }
+
+  .garden-footer-hint {
+    bottom: 4px;
+  }
+
+  .legend-container {
+    padding: 3px 10px;
+    font-size: 0.68rem;
+  }
+
+  .modal-card {
+    max-height: 94dvh;
+    padding: 14px 18px;
+  }
+
+  .polaroid-photo-container {
+    height: auto;
+    max-height: 320px;
+  }
+}
+
+/* ==========================================================================
+   🍜 FOOD JOURNEY TIMELINE & LIGHTBOX STYLING (Memory #01)
+   ========================================================================== */
+.food-journey-wrapper {
+  width: 100%;
+  margin-bottom: 20px;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.food-journey-header {
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 8px 12px 0;
+}
+
+.food-journey-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 999px;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
+  margin-bottom: 8px;
+}
+
+.food-journey-title {
+  font-family: var(--font-display);
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #451a03;
+  margin: 0 0 8px;
+  letter-spacing: -0.3px;
+  line-height: 1.3;
+}
+
+.food-journey-intro {
+  font-size: 0.88rem;
+  color: #78716c;
+  line-height: 1.55;
+  margin: 0 auto 4px;
+}
+
+/* List of Food Places */
+.food-places-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.food-card {
+  background: linear-gradient(160deg, #ffffff 0%, #fffcf5 100%);
+  border: 1.5px solid #fed7aa;
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 6px 20px rgba(180, 83, 9, 0.08), 0 2px 6px rgba(0, 0, 0, 0.03);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.food-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  background: linear-gradient(180deg, #f59e0b, #fbbf24);
+  border-radius: 20px 0 0 20px;
+}
+
+.food-card:hover {
+  transform: translateY(-2px);
+  border-color: #f59e0b;
+  box-shadow: 0 10px 28px rgba(180, 83, 9, 0.14), 0 3px 8px rgba(0, 0, 0, 0.05);
+}
+
+.food-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.food-shop-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+  border: 1px solid #fde68a;
+  border-radius: 12px;
+  padding: 5px 12px;
+}
+
+.food-shop-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  background: #f59e0b;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  border-radius: 50%;
+  padding: 0 4px;
+}
+
+.food-shop-icon {
+  font-size: 1.15rem;
+}
+
+.food-shop-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.02rem;
+  color: #78350f;
+}
+
+.food-date-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #fefce8;
+  border: 1px solid #fef08a;
+  color: #854d0e;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+/* Photos Grid */
+.food-photos-grid {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.food-photos-grid.photos-1 {
+  grid-template-columns: 1fr;
+}
+
+.food-photos-grid.photos-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.food-photo-item {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #f1f5f9;
+  border: 1.5px solid #fed7aa;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  aspect-ratio: 16 / 11;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+
+.food-photos-grid.photos-1 .food-photo-item {
+  max-height: 230px;
+}
+
+.food-photos-grid.photos-2 .food-photo-item {
+  aspect-ratio: 1 / 1;
+}
+
+.food-photo-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.food-photo-item:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.25);
+  border-color: #f59e0b;
+}
+
+.food-photo-item:hover img {
+  transform: scale(1.06);
+}
+
+.food-photo-hint {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  background: rgba(20, 16, 12, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  color: #ffffff;
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  pointer-events: none;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  transition: opacity 0.2s ease;
+}
+
+/* Story Text */
+.food-story-text {
+  font-size: 0.92rem;
+  line-height: 1.68;
+  color: #382f2d;
+  background: linear-gradient(135deg, #fffaf2, #fff6eb);
+  border-left: 3px solid #f59e0b;
+  padding: 11px 14px;
+  border-radius: 0 14px 14px 0;
+  word-break: break-word;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* ==========================================================================
+   PHOTO LIGHTBOX (FULLSCREEN PREVIEW)
+   ========================================================================== */
+.photo-lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.photo-lightbox-overlay.active {
+  display: flex;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.photo-lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(18, 12, 8, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.photo-lightbox-wrapper {
+  position: relative;
+  z-index: 10;
+  max-width: 94vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: scale(0.9);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.photo-lightbox-overlay.active .photo-lightbox-wrapper {
+  transform: scale(1);
+}
+
+.lightbox-img-box {
+  position: relative;
+  max-width: 100%;
+  max-height: 78vh;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(251, 191, 36, 0.2);
+  border: 2px solid rgba(255, 230, 160, 0.4);
+  background: #000000;
+}
+
+.lightbox-img-box img,
+.lightbox-img-box video {
+  max-width: 100%;
+  max-height: 78vh;
+  object-fit: contain;
+  display: block;
+  outline: none;
+}
+
+/* Video item inside memory cards */
+.food-video-item {
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  background: #1c1917;
+  border: 1.5px solid #fed7aa;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.food-card-video {
+  width: 100%;
+  max-height: 280px;
+  display: block;
+  object-fit: contain;
+  background: #000;
+  outline: none;
+}
+
+.lightbox-close-btn {
+  position: absolute;
+  top: -16px;
+  right: -16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #78350f;
+  border: 2px solid #f59e0b;
+  font-size: 1.15rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 25;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.lightbox-close-btn:hover {
+  transform: rotate(90deg) scale(1.1);
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.lightbox-caption {
+  color: #fef08a;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-top: 12px;
+  text-align: center;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+  font-family: var(--font-main);
+  max-width: 90vw;
+}
