@@ -1885,7 +1885,7 @@ body {
 
 .layer-front {
   z-index: 30;
-  pointer-events: auto;
+  pointer-events: none;
 }
 
 /* --------------------------------------------------------------------------
@@ -2205,24 +2205,26 @@ body {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 120;
+  z-index: 999999;
 }
 
 .compliment-bubble {
   position: absolute;
-  padding: 8px 16px;
+  padding: 10px 22px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  border: 1.5px solid #f59e0b;
-  box-shadow: 0 8px 24px rgba(217, 119, 6, 0.25);
-  font-family: var(--font-handwriting);
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #9a3412;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 2px solid #f59e0b;
+  box-shadow: 0 10px 28px rgba(217, 119, 6, 0.35);
+  font-family: 'Itim', 'Mitr', cursive, sans-serif;
+  font-size: clamp(1.12rem, 3.6vw, 1.45rem);
+  font-weight: 700;
+  color: #7c2d12;
   white-space: nowrap;
-  animation: complimentFloatUp 2.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation: complimentFloatUp 2.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   pointer-events: none;
+  z-index: 999999;
 }
 
 @keyframes complimentFloatUp {

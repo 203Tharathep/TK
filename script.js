@@ -827,24 +827,26 @@
     }, 180);
   }
 
-  // Helper to pick random quote from CONFIG.normalFlowerQuotes with weighted odds (Quote #16 is 95% rarer)
+  // Helper to pick random quote from CONFIG.normalFlowerQuotes (Quotes without numbers from user photo)
   function getRandomNormalQuote() {
     const rawQuotes = CONFIG.normalFlowerQuotes || [];
     if (!rawQuotes.length) {
-      return "อ้วนนนน่ารักจัง";
+      return "อ้วนแนนน่ารักจัง";
     }
 
     const items = rawQuotes.map((q, idx) => {
+      let rawText = '';
+      let weight = 1;
       if (typeof q === 'object' && q !== null) {
-        return {
-          text: q.text,
-          weight: typeof q.weight === 'number' ? q.weight : (idx === 15 ? 0.05 : 1)
-        };
+        rawText = q.text || '';
+        weight = typeof q.weight === 'number' ? q.weight : (idx === 15 ? 0.05 : 1);
+      } else {
+        rawText = String(q);
+        weight = (idx === 15 || rawText.includes("อยากเป็นสามีเธอ")) ? 0.05 : 1;
       }
-      return {
-        text: String(q),
-        weight: (idx === 15 || String(q).includes("อยากเป็นสามีเธอ")) ? 0.05 : 1
-      };
+      // Guarantee pure text with NO leading numbers e.g. "1. ", "1.", "14. "
+      const cleanText = rawText.replace(/^\d+[\.\s\)]+/, '').trim();
+      return { text: cleanText, weight };
     });
 
     const totalWeight = items.reduce((sum, it) => sum + (it.weight > 0 ? it.weight : 0), 0);
@@ -1394,14 +1396,12 @@
       if (charIdx < STARGAZE_LOVE_TEXT.length) {
         textEl.textContent += STARGAZE_LOVE_TEXT.charAt(charIdx);
         charIdx++;
-        if (charIdx % 3 === 0) {
-          playChatBubbleSound(true);
-        }
+        // Completely silent: no countdown ticking sounds
       } else {
         clearInterval(stargazeTypewriterTimer);
         stargazeTypewriterTimer = null;
         if (subEl) subEl.classList.add('visible');
-        playChimeSound();
+        // Completely silent: no chime sound
 
         // Celebration heart firework bursts around message box
         const rect = msgBox.getBoundingClientRect();
