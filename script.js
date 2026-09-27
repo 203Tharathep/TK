@@ -614,17 +614,36 @@
 
     // Helper to attach tap/click reliably on both mobile touch and mouse
     function attachMeadowFlowerTap(el, handler) {
-      let touchMoved = false;
-      el.addEventListener('touchstart', () => { touchMoved = false; }, { passive: true });
-      el.addEventListener('touchmove', () => { touchMoved = true; }, { passive: true });
+      let startX = 0, startY = 0;
+      let isTouch = false;
+
+      el.addEventListener('touchstart', (e) => {
+        isTouch = true;
+        if (e.touches && e.touches[0]) {
+          startX = e.touches[0].clientX;
+          startY = e.touches[0].clientY;
+        }
+      }, { passive: true });
+
       el.addEventListener('touchend', (e) => {
-        if (!touchMoved) {
+        let diff = 0;
+        if (e.changedTouches && e.changedTouches[0]) {
+          const dx = e.changedTouches[0].clientX - startX;
+          const dy = e.changedTouches[0].clientY - startY;
+          diff = Math.hypot(dx, dy);
+        }
+        if (diff < 16) {
           e.preventDefault();
           e.stopPropagation();
           handler(e);
         }
       }, { passive: false });
+
       el.addEventListener('click', (e) => {
+        if (isTouch) {
+          setTimeout(() => { isTouch = false; }, 350);
+          return;
+        }
         e.stopPropagation();
         handler(e);
       });
@@ -742,6 +761,18 @@
 
       layerFront.appendChild(flowerEl);
     });
+
+    // Delegated click handler on the meadow as a resilient fallback
+    const meadowContainer = document.getElementById('sunflower-meadow');
+    if (meadowContainer && !meadowContainer.dataset.delegated) {
+      meadowContainer.dataset.delegated = 'true';
+      meadowContainer.addEventListener('click', (e) => {
+        const flower = e.target.closest('.field-sunflower:not(.special-flower)');
+        if (flower) {
+          handleNormalFlowerClick(e, flower);
+        }
+      });
+    }
   }
 
   // Update classes on special flowers based on sequential progress
@@ -787,6 +818,7 @@
       createExplosionEffect(flowerEl, 12, ['#ffd116', '#ffedd5', '#f59e0b', '#ffffff']);
 
       const randomQuote = getRandomNormalQuote();
+      showSunflowerCenterToast(randomQuote);
       showComplimentBubble(randomQuote, flowerEl);
       return;
     }
@@ -849,7 +881,42 @@
     return items[items.length - 1].text;
   }
 
-  // Normal Flower Click (Floating Compliments + Tap Bounce)
+  // Center Toast Timer for Middle-Screen Sunflower Love Message
+  let sunflowerCenterToastTimer = null;
+  function showSunflowerCenterToast(text) {
+    let toast = document.getElementById('sunflower-center-toast');
+    let textEl = document.getElementById('sunflower-toast-text');
+
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'sunflower-center-toast';
+      toast.className = 'sunflower-center-toast';
+      toast.innerHTML = `
+        <div class="sunflower-toast-card">
+          <span class="sunflower-toast-icon">🌻</span>
+          <span class="sunflower-toast-text" id="sunflower-toast-text"></span>
+        </div>
+      `;
+      document.body.appendChild(toast);
+      textEl = document.getElementById('sunflower-toast-text');
+    }
+
+    if (textEl) {
+      textEl.textContent = text;
+    }
+
+    // Retrigger pop animation
+    toast.classList.remove('active');
+    void toast.offsetWidth;
+    toast.classList.add('active');
+
+    if (sunflowerCenterToastTimer) clearTimeout(sunflowerCenterToastTimer);
+    sunflowerCenterToastTimer = setTimeout(() => {
+      if (toast) toast.classList.remove('active');
+    }, 3200);
+  }
+
+  // Normal Flower Click (Center Toast + Floating Compliments + Tap Bounce)
   function handleNormalFlowerClick(e, flowerEl) {
     if (e && e.stopPropagation) e.stopPropagation();
 
@@ -868,16 +935,23 @@
       createExplosionEffect(flowerEl, 12, ['#ffd116', '#ffedd5', '#f59e0b', '#ffffff']);
     }
 
-    // Tap bounce animation
-    flowerEl.classList.remove('flower-tap-bounce');
-    void flowerEl.offsetWidth;
-    flowerEl.classList.add('flower-tap-bounce');
-    setTimeout(() => {
+    // Tap bounce animation on the flower
+    if (flowerEl) {
       flowerEl.classList.remove('flower-tap-bounce');
-    }, 450);
+      void flowerEl.offsetWidth;
+      flowerEl.classList.add('flower-tap-bounce');
+      setTimeout(() => {
+        flowerEl.classList.remove('flower-tap-bounce');
+      }, 450);
+    }
 
-    // Float up directly from the flower head!
-    showComplimentBubble(randomQuote, flowerEl);
+    // 1. Display prominently RIGHT IN THE CENTER OF THE SCREEN (กลางจอ)!
+    showSunflowerCenterToast(randomQuote);
+
+    // 2. Also float up directly from the flower head!
+    if (flowerEl) {
+      showComplimentBubble(randomQuote, flowerEl);
+    }
   }
 
   function showComplimentBubble(text, targetOrX, maybeY) {

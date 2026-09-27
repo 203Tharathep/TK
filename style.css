@@ -2198,6 +2198,74 @@ body {
 /* --------------------------------------------------------------------------
    FLOATING COMPLIMENT TOAST (WHEN NORMAL FLOWERS ARE CLICKED)
    -------------------------------------------------------------------------- */
+/* --------------------------------------------------------------------------
+   CENTER-SCREEN SUNFLOWER LOVE MESSAGE TOAST
+   -------------------------------------------------------------------------- */
+.sunflower-center-toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.75);
+  max-width: min(92vw, 540px);
+  width: max-content;
+  pointer-events: none;
+  z-index: 99999999 !important;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), visibility 0.3s ease;
+}
+
+.sunflower-center-toast.active {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translate(-50%, -50%) scale(1) !important;
+  pointer-events: auto;
+}
+
+.sunflower-toast-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(254, 243, 199, 0.98) 100%);
+  border: 3px solid #f59e0b;
+  border-radius: 999px;
+  padding: 16px 32px;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.32),
+    0 0 45px rgba(245, 158, 11, 0.45);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  animation: toastPulse 2.5s infinite ease-in-out;
+}
+
+@keyframes toastPulse {
+  0%, 100% {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.32), 0 0 35px rgba(245, 158, 11, 0.4);
+  }
+  50% {
+    box-shadow: 0 22px 65px rgba(0, 0, 0, 0.38), 0 0 55px rgba(245, 158, 11, 0.65);
+  }
+}
+
+.sunflower-toast-icon {
+  font-size: clamp(1.8rem, 5.5vw, 2.2rem);
+  line-height: 1;
+  animation: floatSparkles 2s infinite ease-in-out;
+  flex-shrink: 0;
+}
+
+.sunflower-toast-text {
+  font-family: 'Itim', 'Mitr', cursive, sans-serif;
+  font-size: clamp(1.22rem, 4.4vw, 1.75rem);
+  font-weight: 700;
+  color: #7c2d12;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+  text-align: center;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
 .compliment-container {
   position: fixed;
   top: 0;
