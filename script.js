@@ -787,20 +787,7 @@
       createExplosionEffect(flowerEl, 12, ['#ffd116', '#ffedd5', '#f59e0b', '#ffffff']);
 
       const randomQuote = getRandomNormalQuote();
-      const touch = (e && e.touches && e.touches[0]) || (e && e.changedTouches && e.changedTouches[0]);
-      let targetX, targetY;
-      if (touch && touch.clientX) {
-        targetX = touch.clientX;
-        targetY = touch.clientY - 35;
-      } else if (e && typeof e.clientX === 'number' && e.clientX > 0) {
-        targetX = e.clientX;
-        targetY = e.clientY - 35;
-      } else {
-        const rect = flowerEl.getBoundingClientRect();
-        targetX = rect.left + rect.width / 2;
-        targetY = rect.top - 20;
-      }
-      showComplimentBubble(randomQuote, targetX, targetY);
+      showComplimentBubble(randomQuote, flowerEl);
       return;
     }
 
@@ -889,39 +876,34 @@
       flowerEl.classList.remove('flower-tap-bounce');
     }, 450);
 
-    // Calculate coordinate: prioritize click/touch event, fallback to flower element rect
-    const touch = (e && e.touches && e.touches[0]) || (e && e.changedTouches && e.changedTouches[0]);
-    let targetX, targetY;
-    if (touch && typeof touch.clientX === 'number') {
-      targetX = touch.clientX;
-      targetY = touch.clientY - 40;
-    } else if (e && typeof e.clientX === 'number' && e.clientX > 0) {
-      targetX = e.clientX;
-      targetY = e.clientY - 40;
-    } else {
-      const rect = flowerEl.getBoundingClientRect();
-      targetX = rect.left + rect.width / 2;
-      targetY = rect.top - 20;
-    }
-
-    showComplimentBubble(randomQuote, targetX, targetY);
+    // Float up directly from the flower head!
+    showComplimentBubble(randomQuote, flowerEl);
   }
 
-  function showComplimentBubble(text, x, y) {
+  function showComplimentBubble(text, targetOrX, maybeY) {
     const container = toastContainer || document.getElementById('compliment-toast-container') || document.body;
 
     const bubble = document.createElement('div');
     bubble.className = 'compliment-bubble';
     bubble.textContent = text;
 
+    let posX, posY;
+    if (targetOrX && typeof targetOrX === 'object' && targetOrX.getBoundingClientRect) {
+      const rect = targetOrX.getBoundingClientRect();
+      posX = rect.left + rect.width / 2;
+      // Position directly at the flower head so it rises right out of the blossom
+      posY = rect.top + Math.min(20, rect.height * 0.15);
+    } else if (typeof targetOrX === 'number') {
+      posX = targetOrX;
+      posY = typeof maybeY === 'number' ? maybeY : window.innerHeight / 2;
+    } else {
+      posX = window.innerWidth / 2;
+      posY = window.innerHeight / 2;
+    }
+
     const screenW = window.innerWidth || document.documentElement.clientWidth || 360;
-    const screenH = window.innerHeight || document.documentElement.clientHeight || 640;
-
-    const posX = typeof x === 'number' && !isNaN(x) ? x : screenW / 2;
-    const posY = typeof y === 'number' && !isNaN(y) ? y : screenH / 2;
-
-    const safeX = Math.max(100, Math.min(screenW - 100, posX));
-    const safeY = Math.max(80, Math.min(screenH - 120, posY));
+    const safeX = Math.max(90, Math.min(screenW - 90, posX));
+    const safeY = Math.max(65, posY);
 
     bubble.style.left = `${safeX}px`;
     bubble.style.top = `${safeY}px`;
