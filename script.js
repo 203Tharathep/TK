@@ -612,39 +612,16 @@
   function buildInteractiveMeadow() {
     const specialMemories = CONFIG.specialMemories || [];
 
-    // Helper to attach tap/click reliably on both mobile touch and mouse
+    // Helper to attach tap/click reliably on both mobile touch and mouse with zero delay
     function attachMeadowFlowerTap(el, handler) {
-      let startX = 0, startY = 0;
-      let isTouch = false;
-
-      el.addEventListener('touchstart', (e) => {
-        isTouch = true;
-        if (e.touches && e.touches[0]) {
-          startX = e.touches[0].clientX;
-          startY = e.touches[0].clientY;
-        }
-      }, { passive: true });
-
-      el.addEventListener('touchend', (e) => {
-        let diff = 0;
-        if (e.changedTouches && e.changedTouches[0]) {
-          const dx = e.changedTouches[0].clientX - startX;
-          const dy = e.changedTouches[0].clientY - startY;
-          diff = Math.hypot(dx, dy);
-        }
-        if (diff < 16) {
-          e.preventDefault();
-          e.stopPropagation();
-          handler(e);
-        }
-      }, { passive: false });
-
+      let triggered = false;
+      el.addEventListener('pointerdown', (e) => {
+        triggered = true;
+        setTimeout(() => { triggered = false; }, 350);
+        handler(e);
+      });
       el.addEventListener('click', (e) => {
-        if (isTouch) {
-          setTimeout(() => { isTouch = false; }, 350);
-          return;
-        }
-        e.stopPropagation();
+        if (triggered) return;
         handler(e);
       });
     }
@@ -885,34 +862,69 @@
   let sunflowerCenterToastTimer = null;
   function showSunflowerCenterToast(text) {
     let toast = document.getElementById('sunflower-center-toast');
-    let textEl = document.getElementById('sunflower-toast-text');
-
     if (!toast) {
       toast = document.createElement('div');
       toast.id = 'sunflower-center-toast';
       toast.className = 'sunflower-center-toast';
-      toast.innerHTML = `
-        <div class="sunflower-toast-card">
-          <span class="sunflower-toast-icon">🌻</span>
-          <span class="sunflower-toast-text" id="sunflower-toast-text"></span>
-        </div>
-      `;
       document.body.appendChild(toast);
-      textEl = document.getElementById('sunflower-toast-text');
     }
 
-    if (textEl) {
-      textEl.textContent = text;
-    }
+    // Direct inline HTML and styles to guarantee dead-center positioning and instant visibility
+    toast.innerHTML = `
+      <div style="
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(254, 243, 199, 0.98) 100%);
+        border: 3.5px solid #f59e0b;
+        border-radius: 999px;
+        padding: 18px 36px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45), 0 0 45px rgba(245, 158, 11, 0.6);
+        pointer-events: auto;
+        cursor: pointer;
+      ">
+        <span style="font-size: 2.2rem; line-height: 1; display: inline-block;">🌻</span>
+        <span style="
+          font-family: 'Itim', 'Mitr', sans-serif;
+          font-size: clamp(1.25rem, 4.8vw, 1.85rem);
+          font-weight: 700;
+          color: #7c2d12;
+          text-align: center;
+          white-space: nowrap;
+        ">${text}</span>
+      </div>
+    `;
 
-    // Retrigger pop animation
-    toast.classList.remove('active');
-    void toast.offsetWidth;
-    toast.classList.add('active');
+    toast.style.cssText = `
+      position: fixed !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) scale(1) !important;
+      max-width: min(92vw, 540px) !important;
+      width: max-content !important;
+      z-index: 2147483647 !important;
+      display: block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      pointer-events: auto !important;
+      transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    `;
+
+    // Click on toast to dismiss
+    toast.onclick = () => {
+      toast.style.opacity = '0';
+      toast.style.visibility = 'hidden';
+      toast.style.transform = 'translate(-50%, -50%) scale(0.8)';
+    };
 
     if (sunflowerCenterToastTimer) clearTimeout(sunflowerCenterToastTimer);
     sunflowerCenterToastTimer = setTimeout(() => {
-      if (toast) toast.classList.remove('active');
+      if (toast) {
+        toast.style.opacity = '0';
+        toast.style.visibility = 'hidden';
+        toast.style.transform = 'translate(-50%, -50%) scale(0.8)';
+      }
     }, 3200);
   }
 
