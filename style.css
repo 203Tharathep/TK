@@ -1365,7 +1365,7 @@ body {
   transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s ease !important;
 }
 
-/* Stargaze Background Video (Sequential playback of IMG_0120 & IMG_0119) */
+/* Stargaze Background Video (Gapless seamless playback of IMG_0120 & IMG_0119) */
 .stargaze-bg-video {
   position: absolute;
   top: 0;
@@ -1378,12 +1378,14 @@ body {
   pointer-events: auto;
   cursor: pointer;
   z-index: 2;
-  transition: opacity 1.8s ease;
+  transition: opacity 0.15s ease-out;
   filter: brightness(0.92) contrast(1.02);
+  will-change: opacity;
 }
 
 #garden-view.night-mode .stargaze-bg-video.active {
   opacity: 0.95;
+  z-index: 4;
 }
 
 /* Stargaze Flank Stars (Dense sparkling stars on the left and right of the video) */

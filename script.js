@@ -91,13 +91,24 @@
   const bannerTitle = document.getElementById('banner-title');
   const bannerDesc = document.getElementById('banner-desc');
 
-  // Stargazing Background Video & Halley Audio elements
-  const stargazeBgVideo = document.getElementById('stargaze-bg-video');
+  // Stargazing Background Video & Halley Audio elements (Dual preloaded players for zero delay)
+  const stargazeBgVideo0 = document.getElementById('stargaze-bg-video-0');
+  const stargazeBgVideo1 = document.getElementById('stargaze-bg-video-1');
+  const stargazeVideos = [stargazeBgVideo0, stargazeBgVideo1].filter(Boolean);
   const stargazeHalleyAudio = document.getElementById('stargaze-halley-audio');
-  const STARGAZE_VIDEO_PLAYLIST = ['vidback/IMG_0120.mp4', 'vidback/IMG_0119.mp4'];
   let currentStargazeVideoIdx = 0;
   let isStargazeMediaActive = false;
   let wasBgmPlayingBeforeNight = false;
+  let isVideoSwitching = false;
+
+  // Preload and prime both videos early in the background
+  stargazeVideos.forEach(v => {
+    v.muted = true;
+    v.playsInline = true;
+    v.setAttribute('playsinline', '');
+    v.setAttribute('webkit-playsinline', '');
+    try { v.load(); } catch (e) { }
+  });
 
   const toastContainer = document.getElementById('compliment-toast-container');
   const canvas = document.getElementById('ambient-canvas');
@@ -1443,12 +1454,12 @@
     const subEl = document.getElementById('stargaze-message-sub');
 
     // Fade out video so starry night sky and message stand out beautifully
-    if (stargazeBgVideo) {
-      stargazeBgVideo.classList.remove('active');
+    stargazeVideos.forEach(v => {
+      v.classList.remove('active');
       setTimeout(() => {
-        if (stargazeBgVideo) stargazeBgVideo.pause();
-      }, 700);
-    }
+        try { v.pause(); } catch (e) { }
+      }, 300);
+    });
 
     if (!msgBox || !textEl) return;
 
@@ -1504,15 +1515,16 @@
     if (videoEndHandled) return;
     videoEndHandled = true;
 
-    // Fade out and pause the video immediately
-    if (stargazeBgVideo) {
-      stargazeBgVideo.classList.remove('active');
-      stargazeBgVideo.ontimeupdate = null;
-      stargazeBgVideo.onended = null;
+    // Fade out and pause all stargaze background videos immediately
+    stargazeVideos.forEach(v => {
+      v.classList.remove('active');
+      v.ontimeupdate = null;
+      v.onended = null;
+      v.onerror = null;
       setTimeout(() => {
-        if (stargazeBgVideo) stargazeBgVideo.pause();
-      }, 700);
-    }
+        try { v.pause(); } catch (e) { }
+      }, 300);
+    });
 
     // Stop halley audio and its listeners
     if (stargazeHalleyAudio) {
@@ -1533,79 +1545,113 @@
   }
 
   function playStargazeVideoIndex(index) {
-    if (!stargazeBgVideo || videoEndHandled) return;
-    if (index >= STARGAZE_VIDEO_PLAYLIST.length) {
-      // If playlist reached end but song is still playing, loop video playlist seamlessly until song ends
-      if (stargazeHalleyAudio && !stargazeHalleyAudio.paused && !stargazeHalleyAudio.ended) {
-        playStargazeVideoIndex(0);
-      } else {
-        onStargazeVideosFinished();
-      }
-      return;
+    if (videoEndHandled || stargazeVideos.length === 0) return;
+
+    isVideoSwitching = false;
+    currentStargazeVideoIdx = index;
+    const currentVideo = stargazeVideos[index];
+    const nextIdx = (index + 1) % stargazeVideos.length;
+    const nextVideo = stargazeVideos[nextIdx];
+
+    if (!currentVideo) return;
+
+    // Cue next video in the background at 0s so decoding begins ahead of time
+    if (nextVideo) {
+      nextVideo.muted = true;
+      nextVideo.playsInline = true;
+      nextVideo.setAttribute('playsinline', '');
+      nextVideo.setAttribute('webkit-playsinline', '');
+      try {
+        nextVideo.currentTime = 0;
+      } catch (e) { }
     }
 
-    currentStargazeVideoIdx = index;
-    stargazeBgVideo.src = STARGAZE_VIDEO_PLAYLIST[index];
-    stargazeBgVideo.muted = true;
-    stargazeBgVideo.playsInline = true;
-    stargazeBgVideo.setAttribute('playsinline', '');
-    stargazeBgVideo.setAttribute('webkit-playsinline', '');
-    try {
-      stargazeBgVideo.currentTime = 0;
-    } catch (e) { }
-    stargazeBgVideo.classList.add('active');
+    // Make current video active immediately
+    currentVideo.muted = true;
+    currentVideo.playsInline = true;
+    currentVideo.setAttribute('playsinline', '');
+    currentVideo.setAttribute('webkit-playsinline', '');
+    currentVideo.classList.add('active');
 
-    const playVideo = stargazeBgVideo.play();
-    if (playVideo !== undefined) {
-      playVideo.catch((err) => {
+    const playPromise = currentVideo.play();
+    if (playPromise !== undefined) {
+      playPromise.catch((err) => {
         console.log('Stargaze video play caught on index ' + index + ':', err);
-        // If second video is blocked or fails, advance to finished state
-        if (index > 0) {
-          onStargazeVideosFinished();
-        }
       });
     }
 
-    stargazeBgVideo.onerror = () => {
-      console.log('Stargaze video error on index:', index);
-      if (index + 1 < STARGAZE_VIDEO_PLAYLIST.length) {
-        playStargazeVideoIndex(index + 1);
-      } else {
-        onStargazeVideosFinished();
-      }
-    };
+    // Function to seamlessly switch to next video with ZERO delay
+    const advanceToNext = () => {
+      if (videoEndHandled || isVideoSwitching) return;
+      isVideoSwitching = true;
+      currentVideo.ontimeupdate = null;
+      currentVideo.onended = null;
 
-    // When the current video ends, chain to next video or loop until song ends
-    stargazeBgVideo.onended = () => {
-      stargazeBgVideo.ontimeupdate = null;
-      if (videoEndHandled) return;
-      if (currentStargazeVideoIdx + 1 < STARGAZE_VIDEO_PLAYLIST.length) {
-        playStargazeVideoIndex(currentStargazeVideoIdx + 1);
+      if (index === 0) {
+        // Transition from clip 0 to clip 1 with ZERO delay
+        if (nextVideo) {
+          try {
+            nextVideo.currentTime = 0;
+          } catch (e) { }
+          nextVideo.classList.add('active');
+          const p = nextVideo.play();
+          if (p !== undefined) p.catch(() => { });
+
+          // Instantly remove active from previous video
+          currentVideo.classList.remove('active');
+          try {
+            currentVideo.pause();
+            currentVideo.currentTime = 0;
+          } catch (e) { }
+
+          // Transfer active handling to clip 1
+          playStargazeVideoIndex(1);
+        } else {
+          onStargazeVideosFinished();
+        }
       } else {
+        // Clip 1 ended: if song is still playing, loop back to clip 0 seamlessly
         if (stargazeHalleyAudio && !stargazeHalleyAudio.paused && !stargazeHalleyAudio.ended) {
-          playStargazeVideoIndex(0);
+          if (nextVideo) {
+            try {
+              nextVideo.currentTime = 0;
+            } catch (e) { }
+            nextVideo.classList.add('active');
+            const p = nextVideo.play();
+            if (p !== undefined) p.catch(() => { });
+
+            currentVideo.classList.remove('active');
+            try {
+              currentVideo.pause();
+              currentVideo.currentTime = 0;
+            } catch (e) { }
+
+            playStargazeVideoIndex(0);
+          }
         } else {
           onStargazeVideosFinished();
         }
       }
     };
 
-    // Fallback: timeupdate check in case onended doesn't fire on mobile
-    stargazeBgVideo.ontimeupdate = () => {
-      if (videoEndHandled) return;
-      if (stargazeBgVideo.duration && stargazeBgVideo.duration > 0) {
-        if (stargazeBgVideo.duration - stargazeBgVideo.currentTime <= 0.35) {
-          stargazeBgVideo.ontimeupdate = null;
-          if (currentStargazeVideoIdx + 1 < STARGAZE_VIDEO_PLAYLIST.length) {
-            playStargazeVideoIndex(currentStargazeVideoIdx + 1);
-          } else {
-            if (stargazeHalleyAudio && !stargazeHalleyAudio.paused && !stargazeHalleyAudio.ended) {
-              playStargazeVideoIndex(0);
-            } else {
-              onStargazeVideosFinished();
-            }
-          }
+    currentVideo.onended = advanceToNext;
+
+    // Trigger right before video finishes (0.12s) so next video frames are rendering seamlessly
+    currentVideo.ontimeupdate = () => {
+      if (videoEndHandled || isVideoSwitching) return;
+      if (currentVideo.duration && currentVideo.duration > 0) {
+        if (currentVideo.duration - currentVideo.currentTime <= 0.12) {
+          advanceToNext();
         }
+      }
+    };
+
+    currentVideo.onerror = () => {
+      console.log('Stargaze video error on index:', index);
+      if (index === 0 && nextVideo) {
+        advanceToNext();
+      } else {
+        onStargazeVideosFinished();
       }
     };
   }
@@ -1624,18 +1670,18 @@
       gardenView.classList.remove('stargaze-video-active');
     }
 
-    // Fade out and pause background video
-    if (stargazeBgVideo) {
-      stargazeBgVideo.classList.remove('active');
-      stargazeBgVideo.onended = null;
-      stargazeBgVideo.ontimeupdate = null;
-      stargazeBgVideo.onerror = null;
+    // Fade out and pause all background videos
+    stargazeVideos.forEach(v => {
+      v.classList.remove('active');
+      v.onended = null;
+      v.ontimeupdate = null;
+      v.onerror = null;
       setTimeout(() => {
-        if (!isStargazeMediaActive && stargazeBgVideo) {
-          stargazeBgVideo.pause();
+        if (!isStargazeMediaActive) {
+          try { v.pause(); } catch (e) { }
         }
-      }, 700);
-    }
+      }, 300);
+    });
 
     // Stop halley audio
     if (stargazeHalleyAudio) {
@@ -2216,12 +2262,13 @@
 
   function toggleMusic() {
     if (state.isNightMode && isStargazeMediaActive) {
+      const activeVid = stargazeVideos[currentStargazeVideoIdx] || stargazeVideos[0];
       if (stargazeHalleyAudio && !stargazeHalleyAudio.paused) {
         stargazeHalleyAudio.pause();
-        if (stargazeBgVideo) stargazeBgVideo.pause();
+        if (activeVid) activeVid.pause();
       } else if (stargazeHalleyAudio) {
         stargazeHalleyAudio.play().catch(() => { });
-        if (stargazeBgVideo) stargazeBgVideo.play().catch(() => { });
+        if (activeVid) activeVid.play().catch(() => { });
       }
       return;
     }
