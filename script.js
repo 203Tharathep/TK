@@ -1321,14 +1321,14 @@
     wasBgmPlayingBeforeNight = state.isPlayingMusic;
     stopBGM();
 
-    // 2. Play Halley.MP3 audio with whisper-soft volume (loops gently during stargazing)
+    // 2. Play Halley.MP3 audio with whisper-soft volume (plays once: when song finishes, the video ends too)
     if (stargazeHalleyAudio) {
       stargazeHalleyAudio.pause();
       try {
         stargazeHalleyAudio.currentTime = 0;
       } catch (e) { }
       stargazeHalleyAudio.volume = 0.12;
-      stargazeHalleyAudio.loop = true;
+      stargazeHalleyAudio.loop = false;
 
       const playAudio = stargazeHalleyAudio.play();
       if (playAudio !== undefined) {
@@ -1336,6 +1336,21 @@
           console.log('Halley audio play caught:', err);
         });
       }
+
+      // เมื่อเพลงจบ คลิปที่แสดงอยู่ก็จบไปด้วยทันที
+      stargazeHalleyAudio.onended = () => {
+        onStargazeVideosFinished();
+      };
+
+      // Fallback: ตรวจจับก่อนเพลงจบเล็กน้อยป้องกันบราวเซอร์มือถือค้าง
+      stargazeHalleyAudio.ontimeupdate = () => {
+        if (stargazeHalleyAudio.duration && stargazeHalleyAudio.duration > 0) {
+          if (stargazeHalleyAudio.duration - stargazeHalleyAudio.currentTime <= 0.3) {
+            stargazeHalleyAudio.ontimeupdate = null;
+            onStargazeVideosFinished();
+          }
+        }
+      };
     }
 
     // 3. Play video playlist sequentially: IMG_0120.mp4 -> IMG_0119.mp4
@@ -1421,7 +1436,7 @@
     if (videoEndHandled) return;
     videoEndHandled = true;
 
-    // Fade out and pause the video
+    // Fade out and pause the video immediately
     if (stargazeBgVideo) {
       stargazeBgVideo.classList.remove('active');
       stargazeBgVideo.ontimeupdate = null;
@@ -1429,6 +1444,13 @@
       setTimeout(() => {
         if (stargazeBgVideo) stargazeBgVideo.pause();
       }, 700);
+    }
+
+    // Stop halley audio and its listeners
+    if (stargazeHalleyAudio) {
+      stargazeHalleyAudio.onended = null;
+      stargazeHalleyAudio.ontimeupdate = null;
+      stargazeHalleyAudio.pause();
     }
 
     // Display sweet love card in starry night sky
@@ -1443,9 +1465,14 @@
   }
 
   function playStargazeVideoIndex(index) {
-    if (!stargazeBgVideo) return;
+    if (!stargazeBgVideo || videoEndHandled) return;
     if (index >= STARGAZE_VIDEO_PLAYLIST.length) {
-      onStargazeVideosFinished();
+      // If playlist reached end but song is still playing, loop video playlist seamlessly until song ends
+      if (stargazeHalleyAudio && !stargazeHalleyAudio.paused && !stargazeHalleyAudio.ended) {
+        playStargazeVideoIndex(0);
+      } else {
+        onStargazeVideosFinished();
+      }
       return;
     }
 
@@ -1480,25 +1507,35 @@
       }
     };
 
-    // When the current video ends, chain to next video or trigger 6-second timer to evening
+    // When the current video ends, chain to next video or loop until song ends
     stargazeBgVideo.onended = () => {
       stargazeBgVideo.ontimeupdate = null;
+      if (videoEndHandled) return;
       if (currentStargazeVideoIdx + 1 < STARGAZE_VIDEO_PLAYLIST.length) {
         playStargazeVideoIndex(currentStargazeVideoIdx + 1);
       } else {
-        onStargazeVideosFinished();
+        if (stargazeHalleyAudio && !stargazeHalleyAudio.paused && !stargazeHalleyAudio.ended) {
+          playStargazeVideoIndex(0);
+        } else {
+          onStargazeVideosFinished();
+        }
       }
     };
 
     // Fallback: timeupdate check in case onended doesn't fire on mobile
     stargazeBgVideo.ontimeupdate = () => {
+      if (videoEndHandled) return;
       if (stargazeBgVideo.duration && stargazeBgVideo.duration > 0) {
         if (stargazeBgVideo.duration - stargazeBgVideo.currentTime <= 0.35) {
           stargazeBgVideo.ontimeupdate = null;
           if (currentStargazeVideoIdx + 1 < STARGAZE_VIDEO_PLAYLIST.length) {
             playStargazeVideoIndex(currentStargazeVideoIdx + 1);
           } else {
-            onStargazeVideosFinished();
+            if (stargazeHalleyAudio && !stargazeHalleyAudio.paused && !stargazeHalleyAudio.ended) {
+              playStargazeVideoIndex(0);
+            } else {
+              onStargazeVideosFinished();
+            }
           }
         }
       }
@@ -1535,6 +1572,7 @@
     // Stop halley audio
     if (stargazeHalleyAudio) {
       stargazeHalleyAudio.onended = null;
+      stargazeHalleyAudio.ontimeupdate = null;
       stargazeHalleyAudio.pause();
       try {
         stargazeHalleyAudio.currentTime = 0;
